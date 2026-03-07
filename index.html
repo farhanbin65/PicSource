@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PicSource - Home</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" type="text/css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- SQL.js for SQLite in browser -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+    <style>
+        .image-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+        }
+        .metadata-overlay {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+        }
+        .image-card:hover .metadata-overlay {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-base-200 min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <div class="navbar bg-base-100 shadow-lg px-4 md:px-8">
+        <div class="flex-1">
+            <a href="index.html" class="btn btn-ghost text-xl">
+                <i class="fa-solid fa-camera mr-2 text-primary"></i>
+                PicSource
+            </a>
+        </div>
+        <div class="flex-none gap-2">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="upload.html">Upload</a></li>
+                <li><a href="login.html">Login</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8 flex-grow">
+        <!-- Search Bar -->
+        <div class="form-control mb-8">
+            <div class="input-group flex justify-center">
+                <input type="text" id="searchInput" placeholder="Search for images..." class="input input-bordered w-full max-w-2xl" />
+                <button class="btn btn-primary" onclick="searchImages()">
+                    <i class="fa-solid fa-search"></i>
+                    Search
+                </button>
+            </div>
+        </div>
+
+        <!-- Image Gallery -->
+        <div id="gallery" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Images will be loaded here -->
+        </div>
+
+        <!-- Pagination -->
+        <div id="pagination" class="flex justify-center mt-8 gap-2">
+            <!-- Pagination will be generated here -->
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer footer-center p-10 bg-base-300 text-base-content rounded">
+        <div>
+            <p class="font-bold text-lg">
+                <i class="fa-solid fa-camera mr-2"></i>PicSource
+            </p>
+            <p>Your source for amazing photography</p>
+            <p>Copyright &copy; 2024 - All rights reserved</p>
+        </div>
+        <div>
+            <div class="grid grid-flow-col gap-4">
+                <a class="link link-hover"><i class="fa-brands fa-twitter"></i></a>
+                <a class="link link-hover"><i class="fa-brands fa-instagram"></i></a>
+                <a class="link link-hover"><i class="fa-brands fa-facebook"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

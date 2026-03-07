@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PicSource - Login</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- DaisyUI -->
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" type="text/css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <!-- Light theme customization -->
+</head>
+<body class="bg-base-200 min-h-screen flex flex-col">
+    <!-- Navbar -->
+    <div class="navbar bg-base-100 shadow-lg px-4 md:px-8">
+        <div class="flex-1">
+            <a href="index.html" class="btn btn-ghost text-xl">
+                <i class="fa-solid fa-camera mr-2 text-primary"></i>
+                PicSource
+            </a>
+        </div>
+        <div class="flex-none gap-2">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="upload.html">Upload</a></li>
+                <li><a href="login.html" class="active">Login</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Login Form -->
+    <div class="container mx-auto px-4 py-8 flex-grow flex items-center justify-center">
+        <div class="card w-96 bg-base-100 shadow-xl">
+            <div class="card-body">
+                <h2 class="card-title text-2xl font-bold mb-4">Login</h2>
+                
+                <form id="loginForm" onsubmit="return false;">
+                    <!-- Email -->
+                    <div class="form-control mb-4">
+                        <label class="label">
+                            <span class="label-text">Email</span>
+                        </label>
+                        <input type="email" placeholder="email@example.com" class="input input-bordered" required>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="form-control mb-4">
+                        <label class="label">
+                            <span class="label-text">Password</span>
+                        </label>
+                        <input type="password" placeholder="********" class="input input-bordered" required>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="form-control mt-6">
+                        <button class="btn btn-primary" onclick="alert('This is a dummy login form. No functionality implemented.')">
+                            <i class="fa-solid fa-right-to-bracket mr-2"></i>
+                            Login
+                        </button>
+                    </div>
+                </form>
+
+                <div class="divider">OR</div>
+                
+                <p class="text-center text-sm text-gray-500">
+                    Don't have an account? 
+                    <a href="#" class="link link-primary" onclick="alert('Sign up not implemented')">Sign up</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer footer-center p-10 bg-base-300 text-base-content rounded">
+        <div>
+            <p class="font-bold text-lg">
+                <i class="fa-solid fa-camera mr-2"></i>PicSource
+            </p>
+            <p>Your source for amazing photography</p>
+            <p>Copyright &copy; 2024 - All rights reserved</p>
+        </div>
+        <div>
+            <div class="grid grid-flow-col gap-4">
+                <a class="link link-hover"><i class="fa-brands fa-twitter"></i></a>
+                <a class="link link-hover"><i class="fa-brands fa-instagram"></i></a>
+                <a class="link link-hover"><i class="fa-brands fa-facebook"></i></a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
