@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PicSource</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="carla.png">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        .img-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.10);
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+            background: #fff;
+            cursor: pointer;
+        }
+        .img-card:hover {
+            box-shadow: 0 16px 48px rgba(0,0,0,0.18);
+            transform: translateY(-4px);
+        }
+        .img-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .img-card:hover img { transform: scale(1.04); }
+
+        /* Modal backdrop */
+        #metaModal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.65);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+        }
+        #metaModal.open { display: flex; }
+
+        /* Modal box */
+        .modal-box {
+            background: #fff;
+            border-radius: 1.25rem;
+            width: 95%;
+            max-width: 750px;
+            max-height: 88vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.35);
+            animation: popIn 0.22s ease;
+        }
+        @keyframes popIn {
+            from { transform: scale(0.93); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+        @media(min-width: 640px) {
+            .modal-box { flex-direction: row; }
+        }
+
+        /* Modal image side */
+        .modal-img-side {
+            flex: 1;
+            min-height: 220px;
+            max-height: 420px;
+        }
+        .modal-img-side img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 1.25rem 1.25rem 0 0;
+            display: block;
+        }
+        @media(min-width: 640px) {
+            .modal-img-side img { border-radius: 1.25rem 0 0 1.25rem; }
+        }
+
+        /* Modal meta side */
+        .modal-meta-side {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        /* Meta rows */
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 6px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.8rem;
+            gap: 8px;
+        }
+        .meta-row:last-child { border-bottom: none; }
+        .meta-label {
+            color: #94a3b8;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 0.05em;
+            min-width: 90px;
+            padding-top: 2px;
+        }
+        .meta-value { color: #1e293b; text-align: right; word-break: break-word; }
+        .meta-null  { color: #cbd5e1; font-style: italic; }
+
+        .tag-badge {
+            display: inline-block;
+            background: #ede9fe;
+            color: #6d28d9;
+            border-radius: 999px;
+            padding: 2px 9px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+    </style>
+</head>
+<body class="bg-base-200 min-h-screen flex flex-col">
+
+    <!-- NAVBAR -->
+    <div class="navbar bg-base-100 shadow-lg px-8">
+        <div class="flex-1">
+            <a href="/" class="btn btn-ghost text-xl font-bold">
+                <i class="fa-solid fa-camera text-primary mr-2"></i> PicSource
+            </a>
+        </div>
+        <div class="flex-none">
+            <ul class="menu menu-horizontal px-1">
+                <li><a href="/">Home</a></li>
+                <li><a href="/upload-page">Upload</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="container mx-auto px-4 py-12 flex-grow">
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-black mb-4">Your Gallery</h1>
+            <p class="text-gray-500">Click any image to view full metadata</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {% if images %}
+                {% for img in images %}
+
+                <!-- Store all metadata as a JSON blob in data attribute — avoids all escaping issues -->
+                <div class="img-card" data-meta='{{ {
+                    "src":          url_for("send_uploaded_file", filename=img.filename),
+                    "filename":     img.filename      | default("", true),
+                    "title":        img.title         | default("", true),
+                    "description":  img.description   | default("", true),
+                    "category":     img.category      | default("", true),
+                    "type":         img.type          | default("", true),
+                    "format":       img.format        | default("", true),
+                    "resolution":   img.resolution    | default("", true),
+                    "photographer": img.photographer  | default("", true),
+                    "camera":       img.camera        | default("", true),
+                    "location":     img.location      | default("", true),
+                    "size_kb":      img.size_kb       | default("", true),
+                    "upload_time":  img.upload_time   | default("", true),
+                    "tags":         img.tags          | default([], true)
+                } | tojson }}' onclick="openModal(this)">
+
+                    <!-- Image -->
+                    <img src="{{ url_for('send_uploaded_file', filename=img.filename) }}"
+                         alt="{{ img.title or img.filename }}" />
+
+                    <!-- Card bottom strip: 3 key fields only -->
+                    <div class="p-4">
+                        <h2 class="font-black text-sm truncate text-gray-800 mb-2">
+                            {{ img.title or img.filename }}
+                        </h2>
+                        <div class="flex justify-between text-xs text-gray-400">
+                            <span><i class="fa-solid fa-layer-group mr-1"></i>{{ img.category or '—' }}</span>
+                            <span><i class="fa-solid fa-user mr-1"></i>{{ img.photographer or '—' }}</span>
+                            <span><i class="fa-solid fa-weight-hanging mr-1"></i>{{ img.size_kb or '—' }} KB</span>
+                        </div>
+                    </div>
+
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="col-span-full text-center py-20 bg-base-100 rounded-3xl border-2 border-dashed border-gray-300">
+                    <i class="fa-regular fa-folder-open text-7xl mb-4 text-gray-200"></i>
+                    <p class="text-2xl font-bold text-gray-400">No images found in MongoDB</p>
+                    <a href="/upload-page" class="btn btn-primary mt-6">Upload One Now</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div id="metaModal" onclick="closeOnBackdrop(event)">
+        <div class="modal-box">
+
+            <!-- Image side -->
+            <div class="modal-img-side">
+                <img id="modalImg" src="" alt="" />
+            </div>
+
+            <!-- Meta side -->
+            <div class="modal-meta-side">
+                <div class="flex justify-between items-start mb-1">
+                    <h3 id="modalTitle" class="font-black text-lg text-gray-800 leading-snug"></h3>
+                    <button onclick="closeModal()"
+                            class="btn btn-ghost btn-circle btn-sm ml-2 flex-shrink-0">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <p id="modalDesc" class="text-xs text-gray-400 mb-4 leading-relaxed"></p>
+                <div id="modalTags" class="mb-4"></div>
+                <div id="modalRows"></div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer footer-center p-10 bg-base-300 text-base-content mt-10">
+        <div><p class="font-bold">PicSource &copy; 2026</p></div>
+    </footer>
+
+    <script>
+        function v(val) {
+            // Returns the value, or a styled dash if empty
+            return (val !== null && val !== undefined && String(val).trim() !== '')
+                ? String(val)
+                : '<span class="meta-null">—</span>';
+        }
+
+        function openModal(card) {
+            const m = JSON.parse(card.getAttribute('data-meta'));
+
+            document.getElementById('modalImg').src = m.src;
+            document.getElementById('modalImg').alt = m.title || m.filename;
+            document.getElementById('modalTitle').textContent = m.title || m.filename;
+            document.getElementById('modalDesc').textContent  = m.description || 'No description provided.';
+
+            // Tags
+            const tagsEl = document.getElementById('modalTags');
+            if (m.tags && m.tags.length > 0) {
+                tagsEl.innerHTML = m.tags.map(t =>
+                    `<span class="tag-badge">#${t}</span>`
+                ).join('');
+            } else {
+                tagsEl.innerHTML = '';
+            }
+
+            // Metadata rows
+            const fields = [
+                { icon: 'fa-layer-group',    label: 'Category',     val: m.category },
+                { icon: 'fa-photo-film',     label: 'Type',         val: m.type },
+                { icon: 'fa-file-image',     label: 'Format',       val: m.format },
+                { icon: 'fa-expand',         label: 'Resolution',   val: m.resolution },
+                { icon: 'fa-user',           label: 'Photographer', val: m.photographer },
+                { icon: 'fa-camera',         label: 'Camera',       val: m.camera },
+                { icon: 'fa-location-dot',   label: 'Location',     val: m.location },
+                { icon: 'fa-weight-hanging', label: 'Size',         val: m.size_kb ? m.size_kb + ' KB' : '' },
+                { icon: 'fa-file',           label: 'Filename',     val: m.filename },
+                { icon: 'fa-clock',          label: 'Uploaded',     val: m.upload_time },
+            ];
+
+            document.getElementById('modalRows').innerHTML = fields.map(f => `
+                <div class="meta-row">
+                    <span class="meta-label">
+                        <i class="fa-solid ${f.icon} mr-1"></i>${f.label}
+                    </span>
+                    <span class="meta-value">${v(f.val)}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('metaModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('metaModal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function closeOnBackdrop(e) {
+            if (e.target === document.getElementById('metaModal')) closeModal();
+        }
+
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PicSource - Upload</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body class="bg-base-200 min-h-screen flex flex-col">
+    <div class="navbar bg-base-100 shadow-lg px-8">
+        <div class="flex-1">
+            <a href="/" class="btn btn-ghost text-xl font-bold">
+                <i class="fa-solid fa-camera text-primary mr-2"></i> PicSource
+            </a>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-12 flex-grow flex justify-center items-start">
+        <div class="card w-full max-w-2xl bg-base-100 shadow-2xl">
+            <div class="card-body">
+                <div class="flex flex-col items-center text-center mb-6">
+                    <div class="bg-primary/10 p-6 rounded-full mb-4">
+                        <i class="fa-solid fa-cloud-arrow-up text-5xl text-primary"></i>
+                    </div>
+                    <h2 class="card-title text-3xl font-black">Upload Image</h2>
+                    <p class="text-gray-500">Fill in the details below before uploading.</p>
+                </div>
+
+                <form action="/upload" method="POST" enctype="multipart/form-data" class="w-full space-y-5">
+
+                    <!-- File Input -->
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-bold">Select File *</span></label>
+                        <input type="file" name="file"
+                               class="file-input file-input-bordered file-input-primary w-full"
+                               accept="image/*" required />
+                    </div>
+
+                    <!-- Title -->
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-bold">Title *</span></label>
+                        <input type="text" name="title" placeholder="e.g. Sunset at the Beach"
+                               class="input input-bordered input-primary w-full" required />
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-control w-full">
+                        <label class="label"><span class="label-text font-bold">Description *</span></label>
+                        <textarea name="description" placeholder="Describe your image..."
+                                  class="textarea textarea-bordered textarea-primary w-full h-24" required></textarea>
+                    </div>
+
+                    <!-- Two columns row -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        <!-- Category (Dropdown) -->
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-bold">Category *</span></label>
+                            <select name="category" class="select select-bordered select-primary w-full" required>
+                                <option value="" disabled selected>Select category</option>
+                                <option>Nature</option>
+                                <option>Architecture</option>
+                                <option>People & Portraits</option>
+                                <option>Travel</option>
+                                <option>Wildlife</option>
+                                <option>Food & Drink</option>
+                                <option>Sports & Action</option>
+                                <option>Abstract</option>
+                                <option>Technology</option>
+                                <option>Fashion</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Type (Dropdown) -->
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-bold">Type *</span></label>
+                            <select name="type" class="select select-bordered select-primary w-full" required>
+                                <option value="" disabled selected>Select type</option>
+                                <option>Photograph</option>
+                                <option>Illustration</option>
+                                <option>Screenshot</option>
+                                <option>Render / CGI</option>
+                                <option>Scanned Image</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+
+                        <!-- Format (Dropdown) -->
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-bold">Format *</span></label>
+                            <select name="format" class="select select-bordered select-primary w-full" required>
+                                <option value="" disabled selected>Select format</option>
+                                <option>JPEG</option>
+                                <option>PNG</option>
+                                <option>WEBP</option>
+                                <option>GIF</option>
+                                <option>TIFF</option>
+                                <option>RAW</option>
+                                <option>BMP</option>
+                                <option>HEIC</option>
+                            </select>
+                        </div>
+
+                        <!-- Resolution (Dropdown) -->
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-bold">Resolution</span></label>
+                            <select name="resolution" class="select select-bordered select-primary w-full">
+                                <option value="" disabled selected>Select resolution</option>
+                                <option>720p (1280x720)</option>
+                                <option>1080p (1920x1080)</option>
+                                <option>2K (2560x1440)</option>
+                                <option>4K (3840x2160)</option>
+                                <option>8K (7680x4320)</option>
+                                <option>Custom</option>
+                            </select>
+                        </div>
+
+                        <!-- Photographer -->
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-bold">Photographer Name</span></label>
+                            <input type="text" name="photographer" placeholder="e.g. Jane Smith"
+                                   class="input input-bordered input-primary w-full" />
+                        </div>
+
+                        <!-- Camera -->
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-bold">Camera / Device</span></label>
+                            <input type="text" name="camera" placeholder="e.g. Canon EOS R5, iPhone 15 Pro"
+                                   class="input input-bordered input-primary w-full" />
+                        </div>
+
+                        <!-- File Size -->
+                        <div class="form-control w-full">
+                            <label class="label">
+                                <span class="label-text font-bold">File Size (MB)</span>
+                                <span class="label-text-alt text-gray-400">Optional — auto-calculated too</span>
+                            </label>
+                            <input type="number" name="file_size_mb" placeholder="e.g. 4.2" step="0.01" min="0"
+                                   class="input input-bordered input-primary w-full" />
+                        </div>
+
+                        <!-- Location -->
+                        <div class="form-control w-full">
+                            <label class="label"><span class="label-text font-bold">Location</span></label>
+                            <input type="text" name="location" placeholder="e.g. Paris, France"
+                                   class="input input-bordered input-primary w-full" />
+                        </div>
+
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="form-control w-full">
+                        <label class="label">
+                            <span class="label-text font-bold">Tags</span>
+                            <span class="label-text-alt text-gray-400">Comma-separated, e.g. nature, sunset, travel</span>
+                        </label>
+                        <input type="text" name="tags" placeholder="nature, sunset, travel"
+                               class="input input-bordered input-primary w-full" />
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="card-actions w-full pt-2">
+                        <button type="submit" class="btn btn-primary btn-block text-lg">
+                            <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Upload Now
+                        </button>
+                    </div>
+                </form>
+
+                <div class="divider">OR</div>
+                <div class="flex justify-center">
+                    <a href="/" class="btn btn-ghost btn-sm">
+                        <i class="fa-solid fa-arrow-left mr-2"></i> Return to Gallery
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer footer-center p-6 bg-base-300 text-base-content">
+        <div><p class="font-bold">PicSource &copy; 2026</p></div>
+    </footer>
+</body>
+</html>
