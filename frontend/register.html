@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PicSource — Register</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        .auth-bg {
+            background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #f0fdf4 100%);
+            min-height: 100vh;
+        }
+        .auth-card { animation: slideUp 0.35s ease; }
+        @keyframes slideUp {
+            from { transform: translateY(24px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .flash-success { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
+        .flash-error   { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+        .flash-warning { background: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
+        .flash-info    { background: #e0f2fe; color: #0c4a6e; border-left: 4px solid #0ea5e9; }
+
+        /* Password strength bar */
+        #strengthBar { transition: width 0.3s ease, background 0.3s ease; }
+    </style>
+</head>
+<body class="auth-bg flex flex-col min-h-screen">
+
+    <div class="navbar bg-white/70 backdrop-blur shadow-sm px-8">
+        <a href="/" class="btn btn-ghost text-xl font-bold">
+            <i class="fa-solid fa-camera text-primary mr-2"></i> PicSource
+        </a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mx-auto px-4 pt-4 max-w-md">
+                {% for category, message in messages %}
+                    <div class="flash-{{ category }} rounded-lg p-3 mb-2 text-sm font-medium">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="flex-grow flex items-center justify-center px-4 py-12">
+        <div class="auth-card card w-full max-w-md bg-white shadow-2xl border border-gray-100">
+            <div class="card-body p-10">
+
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                        <i class="fa-solid fa-user-plus text-2xl text-primary"></i>
+                    </div>
+                    <h1 class="text-3xl font-black text-gray-800">Create account</h1>
+                    <p class="text-gray-400 text-sm mt-1">Join PicSource and start sharing</p>
+                </div>
+
+                <form action="/register" method="POST" class="space-y-5" id="regForm">
+
+                    <div class="form-control">
+                        <label class="label pb-1">
+                            <span class="label-text font-semibold text-gray-600">
+                                <i class="fa-solid fa-user mr-1 text-primary/70"></i> Username
+                            </span>
+                        </label>
+                        <input type="text" name="username" id="usernameInput"
+                               placeholder="Choose a username"
+                               class="input input-bordered input-primary w-full"
+                               autocomplete="username" required minlength="3" />
+                        <label class="label pt-1">
+                            <span class="label-text-alt text-gray-400">At least 3 characters, lowercase</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label pb-1">
+                            <span class="label-text font-semibold text-gray-600">
+                                <i class="fa-solid fa-lock mr-1 text-primary/70"></i> Password
+                            </span>
+                        </label>
+                        <input type="password" name="password" id="passwordInput"
+                            placeholder="Enter password"
+                            class="input input-bordered input-primary w-full"
+                            autocomplete="new-password" required />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label pb-1">
+                            <span class="label-text font-semibold text-gray-600">
+                                <i class="fa-solid fa-lock mr-1 text-primary/70"></i> Confirm Password
+                            </span>
+                        </label>
+                        <input type="password" name="confirm_password" id="confirmInput"
+                               placeholder="Repeat your password"
+                               class="input input-bordered input-primary w-full"
+                               autocomplete="new-password" required />
+                        <label class="label pt-1">
+                            <span id="matchLabel" class="label-text-alt text-gray-400"></span>
+                        </label>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="btn btn-primary btn-block mt-2 text-base font-bold">
+                        <i class="fa-solid fa-user-plus mr-2"></i> Create Account
+                    </button>
+                </form>
+
+                <div class="divider text-xs text-gray-400">Already have an account?</div>
+
+                <a href="/login" class="btn btn-outline btn-block font-bold">
+                    <i class="fa-solid fa-right-to-bracket mr-2"></i> Sign In
+                </a>
+
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer footer-center p-6 bg-base-300 text-base-content">
+        <p class="font-bold text-sm">PicSource &copy; 2026</p>
+    </footer>
+
+    <script>
+        const pwInput      = document.getElementById('passwordInput');
+        const confirmInput = document.getElementById('confirmInput');
+        const matchLbl     = document.getElementById('matchLabel');
+
+        confirmInput.addEventListener('input', () => {
+            if (confirmInput.value === '') {
+                matchLbl.textContent = '';
+            } else if (confirmInput.value === pwInput.value) {
+                matchLbl.textContent = '✓ Passwords match';
+                matchLbl.style.color = '#22c55e';
+            } else {
+                matchLbl.textContent = '✗ Passwords do not match';
+                matchLbl.style.color = '#ef4444';
+            }
+        });
+
+        document.getElementById('regForm').addEventListener('submit', (e) => {
+            if (pwInput.value !== confirmInput.value) {
+                e.preventDefault();
+                matchLbl.textContent = '✗ Passwords do not match';
+                matchLbl.style.color = '#ef4444';
+            }
+        });
+    </script>
+</body>
+</html>

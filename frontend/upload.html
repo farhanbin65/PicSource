@@ -7,15 +7,62 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        .flash-success { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
+        .flash-error   { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
+        .flash-warning { background: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
+        .flash-info    { background: #e0f2fe; color: #0c4a6e; border-left: 4px solid #0ea5e9; }
+    </style>
 </head>
 <body class="bg-base-200 min-h-screen flex flex-col">
+
+    <!-- NAVBAR with auth -->
     <div class="navbar bg-base-100 shadow-lg px-8">
         <div class="flex-1">
             <a href="/" class="btn btn-ghost text-xl font-bold">
                 <i class="fa-solid fa-camera text-primary mr-2"></i> PicSource
             </a>
         </div>
+        <div class="flex-none">
+            <ul class="menu menu-horizontal px-1 items-center gap-1">
+                <li><a href="/">Home</a></li>
+                {% if session.get('username') %}
+                    <li>
+                        <div class="dropdown dropdown-end">
+                            <label tabindex="0" class="btn btn-ghost gap-2">
+                                <div class="avatar placeholder">
+                                    <div class="bg-primary text-primary-content rounded-full w-8">
+                                        <span class="text-xs font-bold">{{ session['username'][0].upper() }}</span>
+                                    </div>
+                                </div>
+                                <span class="font-semibold text-sm hidden sm:inline">{{ session['username'] }}</span>
+                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                            </label>
+                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-44 mt-2">
+                                <li class="menu-title text-xs text-gray-400">Signed in as <strong>{{ session['username'] }}</strong></li>
+                                <li><a href="/logout" class="text-error">
+                                    <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
+                                </a></li>
+                            </ul>
+                        </div>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
     </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="container mx-auto px-4 pt-4 max-w-2xl">
+                {% for category, message in messages %}
+                    <div class="flash-{{ category }} rounded-lg p-3 mb-2 text-sm font-medium">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <div class="container mx-auto px-4 py-12 flex-grow flex justify-center items-start">
         <div class="card w-full max-w-2xl bg-base-100 shadow-2xl">
@@ -25,12 +72,11 @@
                         <i class="fa-solid fa-cloud-arrow-up text-5xl text-primary"></i>
                     </div>
                     <h2 class="card-title text-3xl font-black">Upload Image</h2>
-                    <p class="text-gray-500">Fill in the details below before uploading.</p>
+                    <p class="text-gray-500">Uploading as <strong>{{ session.get('username', '') }}</strong></p>
                 </div>
 
                 <form action="/upload" method="POST" enctype="multipart/form-data" class="w-full space-y-5">
 
-                    <!-- File Input -->
                     <div class="form-control w-full">
                         <label class="label"><span class="label-text font-bold">Select File *</span></label>
                         <input type="file" name="file"
@@ -38,24 +84,20 @@
                                accept="image/*" required />
                     </div>
 
-                    <!-- Title -->
                     <div class="form-control w-full">
                         <label class="label"><span class="label-text font-bold">Title *</span></label>
                         <input type="text" name="title" placeholder="e.g. Sunset at the Beach"
                                class="input input-bordered input-primary w-full" required />
                     </div>
 
-                    <!-- Description -->
                     <div class="form-control w-full">
                         <label class="label"><span class="label-text font-bold">Description *</span></label>
                         <textarea name="description" placeholder="Describe your image..."
                                   class="textarea textarea-bordered textarea-primary w-full h-24" required></textarea>
                     </div>
 
-                    <!-- Two columns row -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                        <!-- Category (Dropdown) -->
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-bold">Category *</span></label>
                             <select name="category" class="select select-bordered select-primary w-full" required>
@@ -74,7 +116,6 @@
                             </select>
                         </div>
 
-                        <!-- Type (Dropdown) -->
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-bold">Type *</span></label>
                             <select name="type" class="select select-bordered select-primary w-full" required>
@@ -88,7 +129,6 @@
                             </select>
                         </div>
 
-                        <!-- Format (Dropdown) -->
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-bold">Format *</span></label>
                             <select name="format" class="select select-bordered select-primary w-full" required>
@@ -104,7 +144,6 @@
                             </select>
                         </div>
 
-                        <!-- Resolution (Dropdown) -->
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-bold">Resolution</span></label>
                             <select name="resolution" class="select select-bordered select-primary w-full">
@@ -118,50 +157,43 @@
                             </select>
                         </div>
 
-                        <!-- Photographer -->
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-bold">Photographer Name</span></label>
                             <input type="text" name="photographer" placeholder="e.g. Jane Smith"
                                    class="input input-bordered input-primary w-full" />
                         </div>
 
-                        <!-- Camera -->
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-bold">Camera / Device</span></label>
-                            <input type="text" name="camera" placeholder="e.g. Canon EOS R5, iPhone 15 Pro"
+                            <input type="text" name="camera" placeholder="e.g. Canon EOS R5"
                                    class="input input-bordered input-primary w-full" />
                         </div>
 
-                        <!-- File Size -->
                         <div class="form-control w-full">
                             <label class="label">
                                 <span class="label-text font-bold">File Size (MB)</span>
-                                <span class="label-text-alt text-gray-400">Optional — auto-calculated too</span>
+                                <span class="label-text-alt text-gray-400">Optional</span>
                             </label>
                             <input type="number" name="file_size_mb" placeholder="e.g. 4.2" step="0.01" min="0"
                                    class="input input-bordered input-primary w-full" />
                         </div>
 
-                        <!-- Location -->
                         <div class="form-control w-full">
                             <label class="label"><span class="label-text font-bold">Location</span></label>
                             <input type="text" name="location" placeholder="e.g. Paris, France"
                                    class="input input-bordered input-primary w-full" />
                         </div>
-
                     </div>
 
-                    <!-- Tags -->
                     <div class="form-control w-full">
                         <label class="label">
                             <span class="label-text font-bold">Tags</span>
-                            <span class="label-text-alt text-gray-400">Comma-separated, e.g. nature, sunset, travel</span>
+                            <span class="label-text-alt text-gray-400">Comma-separated</span>
                         </label>
                         <input type="text" name="tags" placeholder="nature, sunset, travel"
                                class="input input-bordered input-primary w-full" />
                     </div>
 
-                    <!-- Submit -->
                     <div class="card-actions w-full pt-2">
                         <button type="submit" class="btn btn-primary btn-block text-lg">
                             <i class="fa-solid fa-cloud-arrow-up mr-2"></i> Upload Now
