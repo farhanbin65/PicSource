@@ -1,4 +1,4 @@
-# 📸 PicSource
+# PicSource
 
 > A cloud-native image gallery web application built with Flask, MongoDB, and Tailwind CSS.
 
@@ -6,7 +6,7 @@ PicSource is a full-stack image-sharing platform that allows users to upload, br
 
 ---
 
-## 🚀 Features
+## Features
 
 - **Image Upload** — Upload images with metadata (title, description, tags) through a clean, validated form.
 - **Gallery View** — Browse uploaded images in a responsive grid layout powered by Tailwind CSS and DaisyUI.
@@ -17,7 +17,7 @@ PicSource is a full-stack image-sharing platform that allows users to upload, br
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer        | Technology                          |
 | ------------ | ----------------------------------- |
@@ -30,7 +30,7 @@ PicSource is a full-stack image-sharing platform that allows users to upload, br
 
 ---
 
-## ⚙️ Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -77,7 +77,7 @@ PicSource is a full-stack image-sharing platform that allows users to upload, br
 
 ---
 
-## ☁️ Cloud-Native Design Principles
+## Cloud-Native Design Principles
 
 This project was designed with the [Twelve-Factor App](https://12factor.net/) methodology in mind:
 
@@ -88,7 +88,7 @@ This project was designed with the [Twelve-Factor App](https://12factor.net/) me
 
 ---
 
-## 🔮 Future Improvements
+## Future Improvements
 
 - [ ] **Containerisation** — Dockerfile and `docker-compose.yml` for one-command local setup
 - [ ] **Cloud storage migration** — Replace local `uploads/` with AWS S3 or Azure Blob Storage
@@ -99,19 +99,19 @@ This project was designed with the [Twelve-Factor App](https://12factor.net/) me
 
 ---
 
-## 📚 Module Context
+## Module Context
 
 This project was developed for the **Cloud Native Development** module as part of the BSc Computing Systems programme. It demonstrates the practical application of cloud-native architecture principles, NoSQL data modelling, and modern web development practices.
 
 ---
 
-## 👤 Author
+## Author
 
 **Farhan Bin Hossain**  
 [GitHub](https://github.com/farhanbin65)
 
 ---
 
-## 📄 License
+## License
 
 This project is for educational purposes as part of university coursework.
