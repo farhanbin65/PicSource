@@ -6,52 +6,36 @@
     <link rel="icon" href="{{ url_for('static', filename='carla.png') }}">
     <title>PicSource</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
-        .img-card {
-            position: relative;
-            overflow: hidden;
-            border-radius: 1rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.10);
-            transition: box-shadow 0.3s ease, transform 0.3s ease;
-            background: #fff;
-            cursor: pointer;
-        }
+        .img-card { position: relative; overflow: hidden; border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.10); transition: box-shadow 0.3s, transform 0.3s;
+            background: #fff; cursor: pointer; }
         .img-card:hover { box-shadow: 0 16px 48px rgba(0,0,0,0.18); transform: translateY(-4px); }
-        .img-card img { width: 100%; height: 220px; object-fit: cover; display: block; transition: transform 0.4s ease; }
+        .img-card img { width: 100%; height: 220px; object-fit: cover; display: block; transition: transform 0.4s; }
         .img-card:hover img { transform: scale(1.04); }
 
-        /* Delete button overlay */
-        .delete-btn {
-            position: absolute;
-            top: 8px; right: 8px;
-            z-index: 10;
-            display: none;
-        }
-        .img-card:hover .delete-btn { display: block; }
+        .card-actions-overlay { position: absolute; top: 8px; right: 8px; z-index: 10;
+            display: none; gap: 6px; }
+        .img-card:hover .card-actions-overlay { display: flex; }
 
-        /* Modal backdrop */
-        #metaModal { display: none; position: fixed; inset: 0; z-index: 9999;
+        /* View modal */
+        #metaModal, #editModal { display: none; position: fixed; inset: 0; z-index: 9999;
             background: rgba(0,0,0,0.65); backdrop-filter: blur(5px);
             align-items: center; justify-content: center; }
-        #metaModal.open { display: flex; }
+        #metaModal.open, #editModal.open { display: flex; }
 
-        .modal-box {
-            background: #fff; border-radius: 1.25rem;
-            width: 95%; max-width: 750px; max-height: 88vh;
-            overflow-y: auto; display: flex; flex-direction: column;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.35);
-            animation: popIn 0.22s ease;
-        }
+        .modal-box { background: #fff; border-radius: 1.25rem; width: 95%; max-width: 750px;
+            max-height: 88vh; overflow-y: auto; display: flex; flex-direction: column;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.35); animation: popIn 0.22s ease; }
         @keyframes popIn { from { transform: scale(0.93); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         @media(min-width:640px) { .modal-box { flex-direction: row; } }
 
-        .modal-img-side { flex: 1; min-height: 220px; max-height: 420px; }
+        .modal-img-side { flex: 1; min-height: 220px; }
         .modal-img-side img { width: 100%; height: 100%; object-fit: cover;
             border-radius: 1.25rem 1.25rem 0 0; display: block; }
         @media(min-width:640px) { .modal-img-side img { border-radius: 1.25rem 0 0 1.25rem; } }
-
         .modal-meta-side { flex: 1; padding: 1.5rem; overflow-y: auto; }
 
         .meta-row { display: flex; justify-content: space-between; align-items: flex-start;
@@ -61,11 +45,14 @@
             font-size: 0.65rem; letter-spacing: 0.05em; min-width: 90px; padding-top: 2px; }
         .meta-value { color: #1e293b; text-align: right; word-break: break-word; }
         .meta-null  { color: #cbd5e1; font-style: italic; }
-
-        .tag-badge { display: inline-block; background: #ede9fe; color: #6d28d9;
+        .tag-badge  { display: inline-block; background: #ede9fe; color: #6d28d9;
             border-radius: 999px; padding: 2px 9px; font-size: 0.7rem; font-weight: 600; margin: 2px; }
 
-        /* Flash messages */
+        /* Edit modal box — full width, no image side */
+        .edit-modal-box { background: #fff; border-radius: 1.25rem; width: 95%; max-width: 640px;
+            max-height: 90vh; overflow-y: auto; padding: 2rem;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.35); animation: popIn 0.22s ease; }
+
         .flash-success { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
         .flash-error   { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
         .flash-warning { background: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
@@ -84,23 +71,24 @@
         <div class="flex-none">
             <ul class="menu menu-horizontal px-1 items-center gap-1">
                 <li><a href="/">Home</a></li>
-
                 {% if session.get('username') %}
-                    <!-- Logged-in state -->
                     <li><a href="/upload-page">Upload</a></li>
                     <li>
                         <div class="dropdown dropdown-end">
                             <label tabindex="0" class="btn btn-ghost gap-2">
                                 <div class="avatar placeholder">
-                                    <div class="bg-primary text-primary-content rounded-full w-8">
+                                    <div class="{{ 'bg-error' if session.get('is_admin') else 'bg-primary' }} text-primary-content rounded-full w-8">
                                         <span class="text-xs font-bold">{{ session['username'][0].upper() }}</span>
                                     </div>
                                 </div>
                                 <span class="font-semibold text-sm hidden sm:inline">{{ session['username'] }}</span>
+                                {% if session.get('is_admin') %}
+                                    <span class="badge badge-error badge-sm text-white font-bold">ADMIN</span>
+                                {% endif %}
                                 <i class="fa-solid fa-chevron-down text-xs"></i>
                             </label>
                             <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-44 mt-2">
-                                <li class="menu-title text-xs text-gray-400">Signed in as <strong>{{ session['username'] }}</strong></li>
+                                <li class="menu-title text-xs text-gray-400">Signed in as <strong>{{ session['username'] }}</strong>{% if session.get('is_admin') %} <span class="text-error">(Admin)</span>{% endif %}</li>
                                 <li><a href="/logout" class="text-error">
                                     <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
                                 </a></li>
@@ -108,10 +96,7 @@
                         </div>
                     </li>
                 {% else %}
-                    <!-- Logged-out state -->
-                    <li><a href="/login">
-                        <i class="fa-solid fa-right-to-bracket mr-1"></i> Login
-                    </a></li>
+                    <li><a href="/login"><i class="fa-solid fa-right-to-bracket mr-1"></i> Login</a></li>
                     <li><a href="/register" class="btn btn-primary btn-sm ml-1">
                         <i class="fa-solid fa-user-plus mr-1"></i> Register
                     </a></li>
@@ -125,9 +110,7 @@
         {% if messages %}
             <div class="container mx-auto px-4 pt-4">
                 {% for category, message in messages %}
-                    <div class="flash-{{ category }} rounded-lg p-3 mb-2 text-sm font-medium">
-                        {{ message }}
-                    </div>
+                    <div class="flash-{{ category }} rounded-lg p-3 mb-2 text-sm font-medium">{{ message }}</div>
                 {% endfor %}
             </div>
         {% endif %}
@@ -145,35 +128,57 @@
                 {% for img in images %}
                 <div class="img-card" data-meta='{{ {
                     "src":          url_for("send_uploaded_file", filename=img.filename),
-                    "filename":     img.filename      | default("", true),
-                    "title":        img.title         | default("", true),
-                    "description":  img.description   | default("", true),
-                    "category":     img.category      | default("", true),
-                    "type":         img.type          | default("", true),
-                    "format":       img.format        | default("", true),
-                    "resolution":   img.resolution    | default("", true),
-                    "photographer": img.photographer  | default("", true),
-                    "camera":       img.camera        | default("", true),
-                    "location":     img.location      | default("", true),
-                    "size_kb":      img.size_kb       | default("", true),
-                    "upload_time":  img.upload_time   | default("", true),
-                    "uploaded_by":  img.uploaded_by   | default("", true),
-                    "tags":         img.tags          | default([], true)
+                    "filename":     img.filename     | default("", true),
+                    "title":        img.title        | default("", true),
+                    "description":  img.description  | default("", true),
+                    "category":     img.category     | default("", true),
+                    "type":         img.type         | default("", true),
+                    "format":       img.format       | default("", true),
+                    "resolution":   img.resolution   | default("", true),
+                    "photographer": img.photographer | default("", true),
+                    "camera":       img.camera       | default("", true),
+                    "location":     img.location     | default("", true),
+                    "size_kb":      img.size_kb      | default("", true),
+                    "upload_time":  img.upload_time  | default("", true),
+                    "uploaded_by":  img.uploaded_by  | default("", true),
+                    "tags":         img.tags         | default([], true)
                 } | tojson }}' onclick="openModal(this)">
 
                     <img src="{{ url_for('send_uploaded_file', filename=img.filename) }}"
                          alt="{{ img.title or img.filename }}" />
 
-                    <!-- Delete button (only shown to uploader) -->
-                    {% if session.get('username') and session['username'] == img.get('uploaded_by') %}
-                    <form action="/delete/{{ img.filename }}" method="POST"
-                          class="delete-btn" onclick="event.stopPropagation()">
-                        <button type="submit"
-                                onclick="return confirm('Delete this image? This cannot be undone.')"
-                                class="btn btn-error btn-circle btn-sm shadow-lg">
-                            <i class="fa-solid fa-trash"></i>
+                    <!-- Action buttons — admin only -->
+                    {% if session.get('is_admin') %}
+                    <div class="card-actions-overlay" onclick="event.stopPropagation()">
+
+                        <!-- Edit button -->
+                        <button onclick='openEdit({{ {
+                            "filename":     img.filename     | default("", true),
+                            "title":        img.title        | default("", true),
+                            "description":  img.description  | default("", true),
+                            "category":     img.category     | default("", true),
+                            "type":         img.type         | default("", true),
+                            "format":       img.format       | default("", true),
+                            "resolution":   img.resolution   | default("", true),
+                            "photographer": img.photographer | default("", true),
+                            "camera":       img.camera       | default("", true),
+                            "location":     img.location     | default("", true),
+                            "tags":         img.tags         | default([], true)
+                        } | tojson }})'
+                        class="btn btn-warning btn-circle btn-sm shadow-lg">
+                            <i class="fa-solid fa-pen"></i>
                         </button>
-                    </form>
+
+                        <!-- Delete button -->
+                        <form action="/delete/{{ img.filename }}" method="POST">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit"
+                                    onclick="return confirm('Delete this image? This cannot be undone.')"
+                                    class="btn btn-error btn-circle btn-sm shadow-lg">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
                     {% endif %}
 
                     <div class="p-4">
@@ -202,8 +207,8 @@
         </div>
     </div>
 
-    <!-- MODAL (unchanged) -->
-    <div id="metaModal" onclick="closeOnBackdrop(event)">
+    <!-- VIEW MODAL -->
+    <div id="metaModal" onclick="closeOnBackdrop(event, 'metaModal')">
         <div class="modal-box">
             <div class="modal-img-side">
                 <img id="modalImg" src="" alt="" />
@@ -211,7 +216,7 @@
             <div class="modal-meta-side">
                 <div class="flex justify-between items-start mb-1">
                     <h3 id="modalTitle" class="font-black text-lg text-gray-800 leading-snug"></h3>
-                    <button onclick="closeModal()" class="btn btn-ghost btn-circle btn-sm ml-2 flex-shrink-0">
+                    <button onclick="closeModal('metaModal')" class="btn btn-ghost btn-circle btn-sm ml-2 flex-shrink-0">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -222,6 +227,111 @@
         </div>
     </div>
 
+    <!-- EDIT MODAL -->
+    <div id="editModal" onclick="closeOnBackdrop(event, 'editModal')">
+        <div class="edit-modal-box">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-black text-xl text-gray-800">
+                    <i class="fa-solid fa-pen mr-2 text-warning"></i> Edit Metadata
+                </h3>
+                <button onclick="closeModal('editModal')" class="btn btn-ghost btn-circle btn-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="editForm" method="POST" class="space-y-4">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-bold">Title</span></label>
+                    <input type="text" name="title" id="editTitle" class="input input-bordered input-warning w-full" />
+                </div>
+
+                <div class="form-control">
+                    <label class="label"><span class="label-text font-bold">Description</span></label>
+                    <textarea name="description" id="editDescription"
+                              class="textarea textarea-bordered textarea-warning w-full h-20"></textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold">Category</span></label>
+                        <select name="category" id="editCategory" class="select select-bordered select-warning w-full">
+                            <option value="">—</option>
+                            <option>Nature</option><option>Architecture</option>
+                            <option>People &amp; Portraits</option><option>Travel</option>
+                            <option>Wildlife</option><option>Food &amp; Drink</option>
+                            <option>Sports &amp; Action</option><option>Abstract</option>
+                            <option>Technology</option><option>Fashion</option><option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold">Type</span></label>
+                        <select name="type" id="editType" class="select select-bordered select-warning w-full">
+                            <option value="">—</option>
+                            <option>Photograph</option><option>Illustration</option>
+                            <option>Screenshot</option><option>Render / CGI</option>
+                            <option>Scanned Image</option><option>Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold">Format</span></label>
+                        <select name="format" id="editFormat" class="select select-bordered select-warning w-full">
+                            <option value="">—</option>
+                            <option>JPEG</option><option>PNG</option><option>WEBP</option>
+                            <option>GIF</option><option>TIFF</option><option>RAW</option>
+                            <option>BMP</option><option>HEIC</option>
+                        </select>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold">Resolution</span></label>
+                        <select name="resolution" id="editResolution" class="select select-bordered select-warning w-full">
+                            <option value="">—</option>
+                            <option>720p (1280x720)</option><option>1080p (1920x1080)</option>
+                            <option>2K (2560x1440)</option><option>4K (3840x2160)</option>
+                            <option>8K (7680x4320)</option><option>Custom</option>
+                        </select>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold">Photographer</span></label>
+                        <input type="text" name="photographer" id="editPhotographer"
+                               class="input input-bordered input-warning w-full" />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label"><span class="label-text font-bold">Camera</span></label>
+                        <input type="text" name="camera" id="editCamera"
+                               class="input input-bordered input-warning w-full" />
+                    </div>
+
+                    <div class="form-control col-span-2">
+                        <label class="label"><span class="label-text font-bold">Location</span></label>
+                        <input type="text" name="location" id="editLocation"
+                               class="input input-bordered input-warning w-full" />
+                    </div>
+
+                    <div class="form-control col-span-2">
+                        <label class="label">
+                            <span class="label-text font-bold">Tags</span>
+                            <span class="label-text-alt text-gray-400">Comma-separated</span>
+                        </label>
+                        <input type="text" name="tags" id="editTags"
+                               class="input input-bordered input-warning w-full" />
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-warning btn-block mt-2 font-bold text-base">
+                    <i class="fa-solid fa-floppy-disk mr-2"></i> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
     <footer class="footer footer-center p-10 bg-base-300 text-base-content mt-10">
         <div><p class="font-bold">PicSource &copy; 2026</p></div>
     </footer>
@@ -229,21 +339,21 @@
     <script>
         function v(val) {
             return (val !== null && val !== undefined && String(val).trim() !== '')
-                ? String(val)
-                : '<span class="meta-null">—</span>';
+                ? String(val) : '<span class="meta-null">—</span>';
         }
 
+        // ── VIEW MODAL ──────────────────────────────────────────
         function openModal(card) {
             const m = JSON.parse(card.getAttribute('data-meta'));
-            document.getElementById('modalImg').src = m.src;
-            document.getElementById('modalImg').alt = m.title || m.filename;
+            document.getElementById('modalImg').src           = m.src;
+            document.getElementById('modalImg').alt           = m.title || m.filename;
             document.getElementById('modalTitle').textContent = m.title || m.filename;
             document.getElementById('modalDesc').textContent  = m.description || 'No description provided.';
 
             const tagsEl = document.getElementById('modalTags');
-            if (m.tags && m.tags.length > 0) {
-                tagsEl.innerHTML = m.tags.map(t => `<span class="tag-badge">#${t}</span>`).join('');
-            } else { tagsEl.innerHTML = ''; }
+            tagsEl.innerHTML = (m.tags && m.tags.length > 0)
+                ? m.tags.map(t => `<span class="tag-badge">#${t}</span>`).join('')
+                : '';
 
             const fields = [
                 { icon: 'fa-layer-group',    label: 'Category',     val: m.category },
@@ -258,24 +368,53 @@
                 { icon: 'fa-clock',          label: 'Uploaded',     val: m.upload_time },
                 { icon: 'fa-circle-user',    label: 'Uploader',     val: m.uploaded_by },
             ];
-
             document.getElementById('modalRows').innerHTML = fields.map(f => `
                 <div class="meta-row">
                     <span class="meta-label"><i class="fa-solid ${f.icon} mr-1"></i>${f.label}</span>
                     <span class="meta-value">${v(f.val)}</span>
-                </div>
-            `).join('');
+                </div>`).join('');
 
             document.getElementById('metaModal').classList.add('open');
             document.body.style.overflow = 'hidden';
         }
 
-        function closeModal() {
-            document.getElementById('metaModal').classList.remove('open');
+        // ── EDIT MODAL ──────────────────────────────────────────
+        function openEdit(data) {
+            document.getElementById('editForm').action = `/update/${data.filename}`;
+            document.getElementById('editTitle').value        = data.title        || '';
+            document.getElementById('editDescription').value  = data.description  || '';
+            document.getElementById('editPhotographer').value = data.photographer || '';
+            document.getElementById('editCamera').value       = data.camera       || '';
+            document.getElementById('editLocation').value     = data.location     || '';
+            document.getElementById('editTags').value         = (data.tags || []).join(', ');
+
+            // Set select values
+            ['editCategory', 'editType', 'editFormat', 'editResolution'].forEach(id => {
+                const key = id.replace('edit', '').toLowerCase();
+                const sel = document.getElementById(id);
+                for (let opt of sel.options) {
+                    opt.selected = (opt.value === data[key]);
+                }
+            });
+
+            document.getElementById('editModal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // ── CLOSE ───────────────────────────────────────────────
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
             document.body.style.overflow = '';
         }
-        function closeOnBackdrop(e) { if (e.target === document.getElementById('metaModal')) closeModal(); }
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+        function closeOnBackdrop(e, id) {
+            if (e.target === document.getElementById(id)) closeModal(id);
+        }
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') {
+                closeModal('metaModal');
+                closeModal('editModal');
+            }
+        });
     </script>
 </body>
 </html>

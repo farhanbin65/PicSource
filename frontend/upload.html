@@ -76,6 +76,7 @@
                 </div>
 
                 <form action="/upload" method="POST" enctype="multipart/form-data" class="w-full space-y-5">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                     <div class="form-control w-full">
                         <label class="label"><span class="label-text font-bold">Select File *</span></label>
