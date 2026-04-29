@@ -8,10 +8,7 @@ from bson import ObjectId
 from datetime import datetime
 from functools import wraps
 from dotenv import load_dotenv
-
-# Azure SDKs
 from azure.storage.blob import BlobServiceClient
-from azure.identity import DefaultAzureCredential
 
 load_dotenv()
 
@@ -21,27 +18,19 @@ app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
 
 csrf = CSRFProtect(app)
 
-# ── COSMOS DB (MongoDB API) ────────────────────────────────
-# On Azure: Managed Identity isn't supported for Cosmos MongoDB API,
-# so we use the connection string from App Settings (env var).
-# This is the accepted pattern — Managed Identity is used for Blob instead.
+# ── COSMOS DB / MONGODB ATLAS ──────────────────────────────
 client     = MongoClient(os.environ.get("COSMOS_URI"))
 db         = client["Picsource_db"]
 images_col = db["image_metadata"]
 users_col  = db["user"]
 
-# ── AZURE BLOB STORAGE (Managed Identity) ─────────────────
-# Locally: uses your az login credentials (DefaultAzureCredential fallback)
-# On Azure: uses the App Service System-Assigned Managed Identity
-AZURE_STORAGE_ACCOUNT = os.environ.get("AZURE_STORAGE_ACCOUNT")  # e.g. picsourcestorage
+# ── AZURE BLOB STORAGE (connection string) ─────────────────
 BLOB_CONTAINER        = os.environ.get("BLOB_CONTAINER", "images")
+AZURE_STORAGE_ACCOUNT = os.environ.get("AZURE_STORAGE_ACCOUNT")
 
-credential        = DefaultAzureCredential()
-blob_service      = BlobServiceClient(
-    account_url=f"https://{AZURE_STORAGE_ACCOUNT}.blob.core.windows.net",
-    credential=credential
-)
-container_client  = blob_service.get_container_client(BLOB_CONTAINER)
+conn_str         = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
+blob_service     = BlobServiceClient.from_connection_string(conn_str)
+container_client = blob_service.get_container_client(BLOB_CONTAINER)
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp", "tiff", "bmp", "heic"}
 
@@ -49,7 +38,6 @@ def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def get_blob_url(filename):
-    """Returns the public URL for a blob."""
     return f"https://{AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/{BLOB_CONTAINER}/{filename}"
 
 def login_required(f):
@@ -139,7 +127,6 @@ def handle_upload():
     ext         = os.path.splitext(file.filename)[1].lower()
     unique_name = f"{uuid.uuid4()}{ext}"
 
-    # Upload to Azure Blob Storage
     blob_client = container_client.get_blob_client(unique_name)
     file_bytes  = file.read()
     blob_client.upload_blob(file_bytes, overwrite=True)
@@ -149,7 +136,7 @@ def handle_upload():
 
     images_col.insert_one({
         "filename":     unique_name,
-        "image_url":    get_blob_url(unique_name),   # now a real public Azure URL
+        "image_url":    get_blob_url(unique_name),
         "title":        request.form.get("title", "").strip(),
         "description":  request.form.get("description", "").strip(),
         "category":     request.form.get("category", "").strip(),
@@ -179,13 +166,10 @@ def delete_image(filename):
     if not img:
         flash("Image not found.", "error")
         return redirect(url_for("index"))
-
-    # Delete from Blob Storage
     try:
         container_client.get_blob_client(filename).delete_blob()
     except Exception:
-        pass  # blob may already be gone
-
+        pass
     images_col.delete_one({"filename": filename})
     flash("Image deleted.", "info")
     return redirect(url_for("index"))
@@ -201,7 +185,6 @@ def update_image(filename):
     if not img:
         flash("Image not found.", "error")
         return redirect(url_for("index"))
-
     tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
     images_col.update_one({"filename": filename}, {"$set": {
         "title":        request.form.get("title", "").strip(),
@@ -217,10 +200,6 @@ def update_image(filename):
     }})
     flash("Image updated!", "success")
     return redirect(url_for("index"))
-
-# ── NOTE: /display/<filename> route is removed ─────────────
-# Images now served directly from Azure Blob public URLs.
-# No local file serving needed.
 
 if __name__ == "__main__":
     debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
