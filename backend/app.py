@@ -1,6 +1,6 @@
 import os
 import uuid
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import MongoClient
@@ -9,26 +9,48 @@ from datetime import datetime
 from functools import wraps
 from dotenv import load_dotenv
 
+# Azure SDKs
+from azure.storage.blob import BlobServiceClient
+from azure.identity import DefaultAzureCredential
+
 load_dotenv()
 
 app = Flask(__name__, template_folder="../frontend", static_folder="../static")
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret")
-app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB upload limit
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
 
 csrf = CSRFProtect(app)
 
-client     = MongoClient(os.environ.get("MONGO_URI", "mongodb://localhost:27017/"))
+# ── COSMOS DB (MongoDB API) ────────────────────────────────
+# On Azure: Managed Identity isn't supported for Cosmos MongoDB API,
+# so we use the connection string from App Settings (env var).
+# This is the accepted pattern — Managed Identity is used for Blob instead.
+client     = MongoClient(os.environ.get("COSMOS_URI"))
 db         = client["Picsource_db"]
 images_col = db["image_metadata"]
 users_col  = db["user"]
 
-UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), "..", "uploads")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# ── AZURE BLOB STORAGE (Managed Identity) ─────────────────
+# Locally: uses your az login credentials (DefaultAzureCredential fallback)
+# On Azure: uses the App Service System-Assigned Managed Identity
+AZURE_STORAGE_ACCOUNT = os.environ.get("AZURE_STORAGE_ACCOUNT")  # e.g. picsourcestorage
+BLOB_CONTAINER        = os.environ.get("BLOB_CONTAINER", "images")
+
+credential        = DefaultAzureCredential()
+blob_service      = BlobServiceClient(
+    account_url=f"https://{AZURE_STORAGE_ACCOUNT}.blob.core.windows.net",
+    credential=credential
+)
+container_client  = blob_service.get_container_client(BLOB_CONTAINER)
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp", "tiff", "bmp", "heic"}
 
 def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
+def get_blob_url(filename):
+    """Returns the public URL for a blob."""
+    return f"https://{AZURE_STORAGE_ACCOUNT}.blob.core.windows.net/{BLOB_CONTAINER}/{filename}"
 
 def login_required(f):
     @wraps(f)
@@ -64,20 +86,19 @@ def login():
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
 
-        # Admin check (credentials stored in .env, not in database)
-        if username == os.environ.get("ADMIN_USERNAME") and password == os.environ.get("ADMIN_PASSWORD"):
+        if username == os.environ.get("ADMIN_USERNAME") and \
+           password == os.environ.get("ADMIN_PASSWORD"):
             session["username"] = username
-            session["is_admin"] = True
+            session["is_admin"]  = True
             flash("Welcome, Admin!", "success")
             return redirect(url_for("index"))
 
-        # Regular user check
         user = users_col.find_one({"username": username})
         if not user or not check_password_hash(user["password"], password):
             flash("Invalid username or password.", "error")
             return redirect(url_for("login"))
         session["username"] = user["username"]
-        session["is_admin"] = False
+        session["is_admin"]  = False
         flash(f"Welcome, {user['username']}!", "success")
         return redirect(url_for("index"))
     return render_template("login.html")
@@ -112,20 +133,23 @@ def handle_upload():
         flash("No file selected.", "error")
         return redirect(url_for("upload_page"))
     if not allowed_file(file.filename):
-        flash("Invalid file type. Allowed: PNG, JPG, GIF, WEBP, TIFF, BMP, HEIC.", "error")
+        flash("Invalid file type.", "error")
         return redirect(url_for("upload_page"))
 
     ext         = os.path.splitext(file.filename)[1].lower()
     unique_name = f"{uuid.uuid4()}{ext}"
-    save_path   = os.path.join(UPLOAD_FOLDER, unique_name)
-    file.save(save_path)
 
-    size_bytes = os.path.getsize(save_path)
+    # Upload to Azure Blob Storage
+    blob_client = container_client.get_blob_client(unique_name)
+    file_bytes  = file.read()
+    blob_client.upload_blob(file_bytes, overwrite=True)
+
+    size_bytes = len(file_bytes)
     tags       = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
 
     images_col.insert_one({
         "filename":     unique_name,
-        "image_url":    url_for("send_uploaded_file", filename=unique_name),
+        "image_url":    get_blob_url(unique_name),   # now a real public Azure URL
         "title":        request.form.get("title", "").strip(),
         "description":  request.form.get("description", "").strip(),
         "category":     request.form.get("category", "").strip(),
@@ -155,9 +179,13 @@ def delete_image(filename):
     if not img:
         flash("Image not found.", "error")
         return redirect(url_for("index"))
-    local_path = os.path.join(UPLOAD_FOLDER, filename)
-    if os.path.exists(local_path):
-        os.remove(local_path)
+
+    # Delete from Blob Storage
+    try:
+        container_client.get_blob_client(filename).delete_blob()
+    except Exception:
+        pass  # blob may already be gone
+
     images_col.delete_one({"filename": filename})
     flash("Image deleted.", "info")
     return redirect(url_for("index"))
@@ -175,7 +203,6 @@ def update_image(filename):
         return redirect(url_for("index"))
 
     tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
-
     images_col.update_one({"filename": filename}, {"$set": {
         "title":        request.form.get("title", "").strip(),
         "description":  request.form.get("description", "").strip(),
@@ -191,10 +218,9 @@ def update_image(filename):
     flash("Image updated!", "success")
     return redirect(url_for("index"))
 
-# ── SERVE FILES ────────────────────────────────────────────
-@app.route("/display/<filename>")
-def send_uploaded_file(filename):
-    return send_from_directory(UPLOAD_FOLDER, filename)
+# ── NOTE: /display/<filename> route is removed ─────────────
+# Images now served directly from Azure Blob public URLs.
+# No local file serving needed.
 
 if __name__ == "__main__":
     debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
