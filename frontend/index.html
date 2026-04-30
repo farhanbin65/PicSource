@@ -127,7 +127,7 @@
             {% if images %}
                 {% for img in images %}
                 <div class="img-card" data-meta='{{ {
-                    "src":          url_for("send_uploaded_file", filename=img.filename),
+                    "src":          img.image_url | default("", true),
                     "filename":     img.filename     | default("", true),
                     "title":        img.title        | default("", true),
                     "description":  img.description  | default("", true),
@@ -144,7 +144,7 @@
                     "tags":         img.tags         | default([], true)
                 } | tojson }}' onclick="openModal(this)">
 
-                    <img src="{{ url_for('send_uploaded_file', filename=img.filename) }}"
+                    <img src="{{ img.image_url or '' }}"
                          alt="{{ img.title or img.filename }}" />
 
                     <!-- Action buttons — admin only -->
