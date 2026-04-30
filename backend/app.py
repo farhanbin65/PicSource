@@ -1,7 +1,6 @@
 import os
 import sys
 
-# Test each import and report failures
 failed = []
 
 try:

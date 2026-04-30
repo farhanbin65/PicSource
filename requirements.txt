@@ -1,0 +1,8 @@
+Flask
+Flask-WTF
+Werkzeug
+pymongo[srv]
+python-dotenv
+azure-storage-blob
+azure-identity
+gunicorn
