@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,30 +7,157 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        .auth-bg {
-            background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #f0fdf4 100%);
-            min-height: 100vh;
+        :root {
+            --bg-deep:    #0a0613;
+            --bg-base:    #110821;
+            --bg-card:    #1a0f2e;
+            --bg-elevated:#241540;
+            --border:     rgba(139, 92, 246, 0.15);
+            --border-hover: rgba(139, 92, 246, 0.4);
+            --primary:    #8b5cf6;
+            --primary-light:#a78bfa;
+            --primary-glow: rgba(139, 92, 246, 0.4);
+            --accent:     #c084fc;
+            --text-bright:#f5f3ff;
+            --text-muted: #a89cc8;
+            --text-dim:   #6b5b8e;
         }
-        .auth-card { animation: slideUp 0.35s ease; }
+
+        * { font-family: 'Inter', system-ui, sans-serif; }
+
+        .auth-bg {
+            background: var(--bg-deep);
+            background-image:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.25), transparent),
+                radial-gradient(ellipse 60% 50% at 20% 80%, rgba(192, 132, 252, 0.12), transparent),
+                radial-gradient(ellipse 60% 50% at 80% 50%, rgba(168, 85, 247, 0.08), transparent);
+            min-height: 100vh;
+            color: var(--text-bright);
+        }
+
+        .navbar-custom {
+            background: rgba(10, 6, 19, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo-text {
+            background: linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .auth-card {
+            animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(139, 92, 246, 0.15);
+        }
         @keyframes slideUp {
             from { transform: translateY(24px); opacity: 0; }
             to   { transform: translateY(0);    opacity: 1; }
         }
-        .flash-success { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
-        .flash-error   { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
-        .flash-warning { background: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
-        .flash-info    { background: #e0f2fe; color: #0c4a6e; border-left: 4px solid #0ea5e9; }
 
-        /* Password strength bar */
+        .icon-circle {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(192, 132, 252, 0.15));
+            border: 1px solid var(--border-hover);
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+        }
+        .icon-circle i {
+            background: linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+        }
+
+        .label-text { color: var(--text-muted) !important; }
+        .label-text-alt { color: var(--text-dim) !important; }
+
+        .input-custom {
+            background: var(--bg-elevated) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-bright) !important;
+            transition: all 0.2s;
+        }
+        .input-custom::placeholder { color: var(--text-dim); }
+        .input-custom:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2) !important;
+            outline: none;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 20px var(--primary-glow);
+            transition: all 0.2s;
+            font-weight: 700;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 28px var(--primary-glow);
+            background: linear-gradient(135deg, #9d6efb, #8b5cf6);
+        }
+        .btn-outline-custom {
+            background: transparent;
+            border: 1px solid var(--border-hover);
+            color: var(--text-bright);
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+        .btn-outline-custom:hover {
+            background: rgba(139, 92, 246, 0.1);
+            border-color: var(--primary);
+            color: var(--text-bright);
+        }
+
+        .divider-custom { color: var(--text-dim) !important; }
+        .divider-custom::before,
+        .divider-custom::after { background: var(--border) !important; }
+
+        .flash-success {
+            background: rgba(16, 185, 129, 0.15); color: #6ee7b7;
+            border-left: 4px solid #10b981; backdrop-filter: blur(8px);
+        }
+        .flash-error {
+            background: rgba(239, 68, 68, 0.15); color: #fca5a5;
+            border-left: 4px solid #ef4444; backdrop-filter: blur(8px);
+        }
+        .flash-warning {
+            background: rgba(245, 158, 11, 0.15); color: #fcd34d;
+            border-left: 4px solid #f59e0b; backdrop-filter: blur(8px);
+        }
+        .flash-info {
+            background: rgba(139, 92, 246, 0.15); color: var(--primary-light);
+            border-left: 4px solid var(--primary); backdrop-filter: blur(8px);
+        }
+
+        .footer-custom {
+            background: var(--bg-base);
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+
         #strengthBar { transition: width 0.3s ease, background 0.3s ease; }
     </style>
 </head>
 <body class="auth-bg flex flex-col min-h-screen">
 
-    <div class="navbar bg-white/70 backdrop-blur shadow-sm px-8">
-        <a href="/" class="btn btn-ghost text-xl font-bold">
-            <i class="fa-solid fa-camera text-primary mr-2"></i> PicSource
+    <div class="navbar navbar-custom px-8">
+        <a href="/" class="btn btn-ghost text-xl font-black hover:bg-transparent">
+            <i class="fa-solid fa-camera mr-2" style="color: var(--primary-light)"></i>
+            <span class="logo-text">PicSource</span>
         </a>
     </div>
 
@@ -47,15 +174,15 @@
     {% endwith %}
 
     <div class="flex-grow flex items-center justify-center px-4 py-12">
-        <div class="auth-card card w-full max-w-md bg-white shadow-2xl border border-gray-100">
+        <div class="auth-card card w-full max-w-md rounded-2xl">
             <div class="card-body p-10">
 
                 <div class="text-center mb-8">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                        <i class="fa-solid fa-user-plus text-2xl text-primary"></i>
+                    <div class="icon-circle inline-flex items-center justify-center w-16 h-16 rounded-full mb-4">
+                        <i class="fa-solid fa-user-plus text-2xl"></i>
                     </div>
-                    <h1 class="text-3xl font-black text-gray-800">Create account</h1>
-                    <p class="text-gray-400 text-sm mt-1">Join PicSource and start sharing</p>
+                    <h1 class="text-3xl font-black title-gradient">Create account</h1>
+                    <p style="color: var(--text-muted)" class="text-sm mt-2">Join PicSource and start sharing</p>
                 </div>
 
                 <form action="/register" method="POST" class="space-y-5" id="regForm">
@@ -63,54 +190,54 @@
 
                     <div class="form-control">
                         <label class="label pb-1">
-                            <span class="label-text font-semibold text-gray-600">
-                                <i class="fa-solid fa-user mr-1 text-primary/70"></i> Username
+                            <span class="label-text font-semibold">
+                                <i class="fa-solid fa-user mr-1" style="color: var(--primary-light)"></i> Username
                             </span>
                         </label>
                         <input type="text" name="username" id="usernameInput"
                                placeholder="Choose a username"
-                               class="input input-bordered input-primary w-full"
+                               class="input input-custom w-full"
                                autocomplete="username" required minlength="3" />
                         <label class="label pt-1">
-                            <span class="label-text-alt text-gray-400">At least 3 characters, lowercase</span>
+                            <span class="label-text-alt">At least 3 characters, lowercase</span>
                         </label>
                     </div>
 
                     <div class="form-control">
                         <label class="label pb-1">
-                            <span class="label-text font-semibold text-gray-600">
-                                <i class="fa-solid fa-lock mr-1 text-primary/70"></i> Password
+                            <span class="label-text font-semibold">
+                                <i class="fa-solid fa-lock mr-1" style="color: var(--primary-light)"></i> Password
                             </span>
                         </label>
                         <input type="password" name="password" id="passwordInput"
                             placeholder="Enter password"
-                            class="input input-bordered input-primary w-full"
+                            class="input input-custom w-full"
                             autocomplete="new-password" required />
                     </div>
 
                     <div class="form-control">
                         <label class="label pb-1">
-                            <span class="label-text font-semibold text-gray-600">
-                                <i class="fa-solid fa-lock mr-1 text-primary/70"></i> Confirm Password
+                            <span class="label-text font-semibold">
+                                <i class="fa-solid fa-lock mr-1" style="color: var(--primary-light)"></i> Confirm Password
                             </span>
                         </label>
                         <input type="password" name="confirm_password" id="confirmInput"
                                placeholder="Repeat your password"
-                               class="input input-bordered input-primary w-full"
+                               class="input input-custom w-full"
                                autocomplete="new-password" required />
                         <label class="label pt-1">
-                            <span id="matchLabel" class="label-text-alt text-gray-400"></span>
+                            <span id="matchLabel" class="label-text-alt"></span>
                         </label>
                     </div>
 
-                    <button type="submit" id="submitBtn" class="btn btn-primary btn-block mt-2 text-base font-bold">
+                    <button type="submit" id="submitBtn" class="btn btn-primary-custom btn-block mt-2 text-base">
                         <i class="fa-solid fa-user-plus mr-2"></i> Create Account
                     </button>
                 </form>
 
-                <div class="divider text-xs text-gray-400">Already have an account?</div>
+                <div class="divider divider-custom text-xs">Already have an account?</div>
 
-                <a href="/login" class="btn btn-outline btn-block font-bold">
+                <a href="/login" class="btn btn-outline-custom btn-block">
                     <i class="fa-solid fa-right-to-bracket mr-2"></i> Sign In
                 </a>
 
@@ -118,7 +245,7 @@
         </div>
     </div>
 
-    <footer class="footer footer-center p-6 bg-base-300 text-base-content">
+    <footer class="footer footer-center p-6 footer-custom">
         <p class="font-bold text-sm">PicSource &copy; 2026</p>
     </footer>
 
@@ -132,10 +259,10 @@
                 matchLbl.textContent = '';
             } else if (confirmInput.value === pwInput.value) {
                 matchLbl.textContent = '✓ Passwords match';
-                matchLbl.style.color = '#22c55e';
+                matchLbl.style.color = '#6ee7b7';
             } else {
                 matchLbl.textContent = '✗ Passwords do not match';
-                matchLbl.style.color = '#ef4444';
+                matchLbl.style.color = '#fca5a5';
             }
         });
 
@@ -143,7 +270,7 @@
             if (pwInput.value !== confirmInput.value) {
                 e.preventDefault();
                 matchLbl.textContent = '✗ Passwords do not match';
-                matchLbl.style.color = '#ef4444';
+                matchLbl.style.color = '#fca5a5';
             }
         });
     </script>

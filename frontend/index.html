@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,96 +8,372 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        .img-card { position: relative; overflow: hidden; border-radius: 1rem;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.10); transition: box-shadow 0.3s, transform 0.3s;
-            background: #fff; cursor: pointer; }
-        .img-card:hover { box-shadow: 0 16px 48px rgba(0,0,0,0.18); transform: translateY(-4px); }
-        .img-card img { width: 100%; height: 220px; object-fit: cover; display: block; transition: transform 0.4s; }
-        .img-card:hover img { transform: scale(1.04); }
+        :root {
+            --bg-deep:    #0a0613;
+            --bg-base:    #110821;
+            --bg-card:    #1a0f2e;
+            --bg-elevated:#241540;
+            --border:     rgba(139, 92, 246, 0.15);
+            --border-hover: rgba(139, 92, 246, 0.4);
+            --primary:    #8b5cf6;
+            --primary-light:#a78bfa;
+            --primary-glow: rgba(139, 92, 246, 0.4);
+            --accent:     #c084fc;
+            --text-bright:#f5f3ff;
+            --text-muted: #a89cc8;
+            --text-dim:   #6b5b8e;
+        }
 
-        .card-actions-overlay { position: absolute; top: 8px; right: 8px; z-index: 10;
-            display: none; gap: 6px; }
+        * { font-family: 'Inter', system-ui, sans-serif; }
+
+        body {
+            background: var(--bg-deep);
+            color: var(--text-bright);
+            background-image:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.15), transparent),
+                radial-gradient(ellipse 60% 50% at 80% 50%, rgba(168, 85, 247, 0.08), transparent);
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        .navbar-custom {
+            background: rgba(10, 6, 19, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo-text {
+            background: linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .nav-link {
+            color: var(--text-muted);
+            transition: color 0.2s;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+        }
+        .nav-link:hover { color: var(--text-bright); background: rgba(139, 92, 246, 0.1); }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 20px var(--primary-glow);
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 28px var(--primary-glow);
+            background: linear-gradient(135deg, #9d6efb, #8b5cf6);
+        }
+
+        .avatar-circle {
+            background: linear-gradient(135deg, #8b5cf6, #c084fc);
+        }
+        .avatar-circle.admin {
+            background: linear-gradient(135deg, #ef4444, #f97316);
+        }
+
+        /* HERO */
+        .hero-title {
+            background: linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.03em;
+        }
+
+        /* IMAGE CARD */
+        .img-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+        .img-card:hover {
+            border-color: var(--border-hover);
+            box-shadow: 0 16px 48px rgba(139, 92, 246, 0.25);
+            transform: translateY(-6px);
+        }
+        .img-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .img-card:hover img { transform: scale(1.06); }
+
+        .img-card-body {
+            padding: 1rem 1.1rem 1.1rem;
+            background: linear-gradient(180deg, transparent, rgba(36, 21, 64, 0.4));
+        }
+        .img-card-title {
+            color: var(--text-bright);
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .img-card-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--text-dim);
+        }
+        .img-card-meta i { color: var(--primary-light); margin-right: 4px; }
+
+        .card-actions-overlay {
+            position: absolute; top: 10px; right: 10px; z-index: 10;
+            display: none; gap: 6px;
+        }
         .img-card:hover .card-actions-overlay { display: flex; }
 
-        /* View modal */
-        #metaModal, #editModal { display: none; position: fixed; inset: 0; z-index: 9999;
-            background: rgba(0,0,0,0.65); backdrop-filter: blur(5px);
-            align-items: center; justify-content: center; }
+        .btn-edit {
+            background: rgba(245, 158, 11, 0.95);
+            color: white;
+            border: none;
+            backdrop-filter: blur(8px);
+        }
+        .btn-edit:hover { background: rgb(245, 158, 11); }
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.95);
+            color: white;
+            border: none;
+            backdrop-filter: blur(8px);
+        }
+        .btn-delete:hover { background: rgb(239, 68, 68); }
+
+        /* EMPTY STATE */
+        .empty-state {
+            background: var(--bg-card);
+            border: 2px dashed var(--border);
+            border-radius: 1.5rem;
+        }
+
+        /* MODALS */
+        #metaModal, #editModal {
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: rgba(5, 2, 10, 0.85);
+            backdrop-filter: blur(8px);
+            align-items: center; justify-content: center;
+        }
         #metaModal.open, #editModal.open { display: flex; }
 
-        .modal-box { background: #fff; border-radius: 1.25rem; width: 95%; max-width: 750px;
-            max-height: 88vh; overflow-y: auto; display: flex; flex-direction: column;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.35); animation: popIn 0.22s ease; }
-        @keyframes popIn { from { transform: scale(0.93); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        @media(min-width:640px) { .modal-box { flex-direction: row; } }
+        .modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            width: 95%; max-width: 750px;
+            max-height: 88vh; overflow: hidden;
+            display: flex; flex-direction: column;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(139, 92, 246, 0.15);
+            animation: popIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes popIn {
+            from { transform: scale(0.93); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        @media (min-width: 640px) { .modal-box { flex-direction: row; } }
 
-        .modal-img-side { flex: 1; min-height: 220px; }
-        .modal-img-side img { width: 100%; height: 100%; object-fit: cover;
-            border-radius: 1.25rem 1.25rem 0 0; display: block; }
-        @media(min-width:640px) { .modal-img-side img { border-radius: 1.25rem 0 0 1.25rem; } }
-        .modal-meta-side { flex: 1; padding: 1.5rem; overflow-y: auto; }
+        .modal-img-side { flex: 1; min-height: 220px; background: var(--bg-deep); }
+        .modal-img-side img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .modal-meta-side { flex: 1; padding: 1.75rem; overflow-y: auto; }
 
-        .meta-row { display: flex; justify-content: space-between; align-items: flex-start;
-            padding: 6px 0; border-bottom: 1px solid #f1f5f9; font-size: 0.8rem; gap: 8px; }
+        .modal-meta-side h3 { color: var(--text-bright); }
+        #modalDesc { color: var(--text-muted); }
+
+        .meta-row {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.8rem; gap: 8px;
+        }
         .meta-row:last-child { border-bottom: none; }
-        .meta-label { color: #94a3b8; font-weight: 700; text-transform: uppercase;
-            font-size: 0.65rem; letter-spacing: 0.05em; min-width: 90px; padding-top: 2px; }
-        .meta-value { color: #1e293b; text-align: right; word-break: break-word; }
-        .meta-null  { color: #cbd5e1; font-style: italic; }
-        .tag-badge  { display: inline-block; background: #ede9fe; color: #6d28d9;
-            border-radius: 999px; padding: 2px 9px; font-size: 0.7rem; font-weight: 600; margin: 2px; }
+        .meta-label {
+            color: var(--text-dim);
+            font-weight: 700; text-transform: uppercase;
+            font-size: 0.65rem; letter-spacing: 0.06em;
+            min-width: 90px; padding-top: 2px;
+        }
+        .meta-label i { color: var(--primary-light); }
+        .meta-value { color: var(--text-bright); text-align: right; word-break: break-word; }
+        .meta-null  { color: var(--text-dim); font-style: italic; }
 
-        /* Edit modal box — full width, no image side */
-        .edit-modal-box { background: #fff; border-radius: 1.25rem; width: 95%; max-width: 640px;
-            max-height: 90vh; overflow-y: auto; padding: 2rem;
-            box-shadow: 0 30px 80px rgba(0,0,0,0.35); animation: popIn 0.22s ease; }
+        .tag-badge {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--primary-light);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 999px;
+            padding: 3px 10px;
+            font-size: 0.7rem; font-weight: 600;
+            margin: 2px;
+        }
 
-        .flash-success { background: #d1fae5; color: #065f46; border-left: 4px solid #10b981; }
-        .flash-error   { background: #fee2e2; color: #991b1b; border-left: 4px solid #ef4444; }
-        .flash-warning { background: #fef3c7; color: #92400e; border-left: 4px solid #f59e0b; }
-        .flash-info    { background: #e0f2fe; color: #0c4a6e; border-left: 4px solid #0ea5e9; }
+        /* EDIT MODAL */
+        .edit-modal-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1.25rem;
+            width: 95%; max-width: 640px;
+            max-height: 90vh; overflow-y: auto;
+            padding: 2rem;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(139, 92, 246, 0.15);
+            animation: popIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .edit-modal-box h3 { color: var(--text-bright); }
+        .edit-modal-box .label-text { color: var(--text-muted); font-weight: 600; }
+        .edit-modal-box .label-text-alt { color: var(--text-dim); }
+
+        .edit-modal-box input,
+        .edit-modal-box textarea,
+        .edit-modal-box select {
+            background: var(--bg-elevated) !important;
+            border: 1px solid var(--border) !important;
+            color: var(--text-bright) !important;
+            transition: all 0.2s;
+        }
+        .edit-modal-box input:focus,
+        .edit-modal-box textarea:focus,
+        .edit-modal-box select:focus {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2) !important;
+            outline: none;
+        }
+        .edit-modal-box select option { background: var(--bg-elevated); color: var(--text-bright); }
+
+        .btn-save {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            border: none;
+            font-weight: 700;
+            transition: all 0.2s;
+        }
+        .btn-save:hover {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-close {
+            color: var(--text-muted);
+            background: transparent;
+        }
+        .btn-close:hover { color: var(--text-bright); background: rgba(139, 92, 246, 0.1); }
+
+        /* FLASH MESSAGES */
+        .flash-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: #6ee7b7;
+            border-left: 4px solid #10b981;
+            backdrop-filter: blur(8px);
+        }
+        .flash-error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #fca5a5;
+            border-left: 4px solid #ef4444;
+            backdrop-filter: blur(8px);
+        }
+        .flash-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fcd34d;
+            border-left: 4px solid #f59e0b;
+            backdrop-filter: blur(8px);
+        }
+        .flash-info {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--primary-light);
+            border-left: 4px solid var(--primary);
+            backdrop-filter: blur(8px);
+        }
+
+        /* DROPDOWN */
+        .dropdown-content {
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border);
+        }
+        .dropdown-content li > a { color: var(--text-muted); }
+        .dropdown-content li > a:hover { background: rgba(139, 92, 246, 0.1); color: var(--text-bright); }
+        .menu-title { color: var(--text-dim) !important; }
+
+        /* FOOTER */
+        .footer-custom {
+            background: var(--bg-base);
+            border-top: 1px solid var(--border);
+            color: var(--text-dim);
+        }
+
+        /* BADGE */
+        .badge-admin {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            font-weight: 700;
+        }
+
+        /* SCROLLBAR */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-elevated);
+            border-radius: 10px;
+            border: 2px solid var(--bg-deep);
+        }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
     </style>
 </head>
-<body class="bg-base-200 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col">
 
     <!-- NAVBAR -->
-    <div class="navbar bg-base-100 shadow-lg px-8">
+    <div class="navbar navbar-custom px-8 sticky top-0 z-50">
         <div class="flex-1">
-            <a href="/" class="btn btn-ghost text-xl font-bold">
-                <i class="fa-solid fa-camera text-primary mr-2"></i> PicSource
+            <a href="/" class="btn btn-ghost text-xl font-black hover:bg-transparent">
+                <i class="fa-solid fa-camera mr-2" style="color: var(--primary-light)"></i>
+                <span class="logo-text">PicSource</span>
             </a>
         </div>
         <div class="flex-none">
             <ul class="menu menu-horizontal px-1 items-center gap-1">
-                <li><a href="/">Home</a></li>
+                <li><a href="/" class="nav-link">Home</a></li>
                 {% if session.get('username') %}
-                    <li><a href="/upload-page">Upload</a></li>
+                    <li><a href="/upload-page" class="nav-link">Upload</a></li>
                     <li>
                         <div class="dropdown dropdown-end">
-                            <label tabindex="0" class="btn btn-ghost gap-2">
+                            <label tabindex="0" class="btn btn-ghost gap-2 hover:bg-transparent">
                                 <div class="avatar placeholder">
-                                    <div class="{{ 'bg-error' if session.get('is_admin') else 'bg-primary' }} text-primary-content rounded-full w-8">
+                                    <div class="avatar-circle {{ 'admin' if session.get('is_admin') else '' }} text-white rounded-full w-8">
                                         <span class="text-xs font-bold">{{ session['username'][0].upper() }}</span>
                                     </div>
                                 </div>
-                                <span class="font-semibold text-sm hidden sm:inline">{{ session['username'] }}</span>
+                                <span class="font-semibold text-sm hidden sm:inline" style="color: var(--text-bright)">{{ session['username'] }}</span>
                                 {% if session.get('is_admin') %}
-                                    <span class="badge badge-error badge-sm text-white font-bold">ADMIN</span>
+                                    <span class="badge badge-admin badge-sm">ADMIN</span>
                                 {% endif %}
-                                <i class="fa-solid fa-chevron-down text-xs"></i>
+                                <i class="fa-solid fa-chevron-down text-xs" style="color: var(--text-muted)"></i>
                             </label>
-                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-44 mt-2">
-                                <li class="menu-title text-xs text-gray-400">Signed in as <strong>{{ session['username'] }}</strong>{% if session.get('is_admin') %} <span class="text-error">(Admin)</span>{% endif %}</li>
-                                <li><a href="/logout" class="text-error">
+                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-2xl rounded-box w-52 mt-2">
+                                <li class="menu-title text-xs">Signed in as <strong>{{ session['username'] }}</strong>{% if session.get('is_admin') %} <span style="color:#fca5a5">(Admin)</span>{% endif %}</li>
+                                <li><a href="/logout" style="color:#fca5a5">
                                     <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
                                 </a></li>
                             </ul>
                         </div>
                     </li>
                 {% else %}
-                    <li><a href="/login"><i class="fa-solid fa-right-to-bracket mr-1"></i> Login</a></li>
-                    <li><a href="/register" class="btn btn-primary btn-sm ml-1">
+                    <li><a href="/login" class="nav-link"><i class="fa-solid fa-right-to-bracket mr-1"></i> Login</a></li>
+                    <li><a href="/register" class="btn btn-primary-custom btn-sm ml-1">
                         <i class="fa-solid fa-user-plus mr-1"></i> Register
                     </a></li>
                 {% endif %}
@@ -117,10 +393,10 @@
     {% endwith %}
 
     <!-- GALLERY -->
-    <div class="container mx-auto px-4 py-12 flex-grow">
-        <div class="text-center mb-12">
-            <h1 class="text-5xl font-black mb-4">Your Gallery</h1>
-            <p class="text-gray-500">Click any image to view full metadata</p>
+    <div class="container mx-auto px-4 py-16 flex-grow">
+        <div class="text-center mb-14">
+            <h1 class="text-5xl md:text-6xl font-black mb-4 hero-title">Your Gallery</h1>
+            <p style="color: var(--text-muted)" class="text-lg">Click any image to view full metadata</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -147,11 +423,8 @@
                     <img src="{{ img.image_url or '' }}"
                          alt="{{ img.title or img.filename }}" />
 
-                    <!-- Action buttons — admin only -->
                     {% if session.get('is_admin') %}
                     <div class="card-actions-overlay" onclick="event.stopPropagation()">
-
-                        <!-- Edit button -->
                         <button onclick='openEdit({{ {
                             "filename":     img.filename     | default("", true),
                             "title":        img.title        | default("", true),
@@ -165,42 +438,41 @@
                             "location":     img.location     | default("", true),
                             "tags":         img.tags         | default([], true)
                         } | tojson }})'
-                        class="btn btn-warning btn-circle btn-sm shadow-lg">
+                        class="btn btn-edit btn-circle btn-sm shadow-lg">
                             <i class="fa-solid fa-pen"></i>
                         </button>
 
-                        <!-- Delete button -->
                         <form action="/delete/{{ img.filename }}" method="POST">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <button type="submit"
                                     onclick="return confirm('Delete this image? This cannot be undone.')"
-                                    class="btn btn-error btn-circle btn-sm shadow-lg">
+                                    class="btn btn-delete btn-circle btn-sm shadow-lg">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </form>
                     </div>
                     {% endif %}
 
-                    <div class="p-4">
-                        <h2 class="font-black text-sm truncate text-gray-800 mb-2">
+                    <div class="img-card-body">
+                        <h2 class="img-card-title">
                             {{ img.title or img.filename }}
                         </h2>
-                        <div class="flex justify-between text-xs text-gray-400">
-                            <span><i class="fa-solid fa-layer-group mr-1"></i>{{ img.category or '—' }}</span>
-                            <span><i class="fa-solid fa-user mr-1"></i>{{ img.photographer or '—' }}</span>
-                            <span><i class="fa-solid fa-weight-hanging mr-1"></i>{{ img.size_kb or '—' }} KB</span>
+                        <div class="img-card-meta">
+                            <span><i class="fa-solid fa-layer-group"></i>{{ img.category or '—' }}</span>
+                            <span><i class="fa-solid fa-user"></i>{{ img.photographer or '—' }}</span>
+                            <span><i class="fa-solid fa-weight-hanging"></i>{{ img.size_kb or '—' }} KB</span>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="col-span-full text-center py-20 bg-base-100 rounded-3xl border-2 border-dashed border-gray-300">
-                    <i class="fa-regular fa-folder-open text-7xl mb-4 text-gray-200"></i>
-                    <p class="text-2xl font-bold text-gray-400">No images yet</p>
+                <div class="col-span-full text-center py-24 empty-state">
+                    <i class="fa-regular fa-folder-open text-7xl mb-4" style="color: var(--text-dim)"></i>
+                    <p class="text-2xl font-bold" style="color: var(--text-muted)">No images yet</p>
                     {% if session.get('username') %}
-                        <a href="/upload-page" class="btn btn-primary mt-6">Upload One Now</a>
+                        <a href="/upload-page" class="btn btn-primary-custom mt-6">Upload One Now</a>
                     {% else %}
-                        <a href="/login" class="btn btn-primary mt-6">Login to Upload</a>
+                        <a href="/login" class="btn btn-primary-custom mt-6">Login to Upload</a>
                     {% endif %}
                 </div>
             {% endif %}
@@ -214,13 +486,13 @@
                 <img id="modalImg" src="" alt="" />
             </div>
             <div class="modal-meta-side">
-                <div class="flex justify-between items-start mb-1">
-                    <h3 id="modalTitle" class="font-black text-lg text-gray-800 leading-snug"></h3>
-                    <button onclick="closeModal('metaModal')" class="btn btn-ghost btn-circle btn-sm ml-2 flex-shrink-0">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 id="modalTitle" class="font-black text-lg leading-snug"></h3>
+                    <button onclick="closeModal('metaModal')" class="btn btn-close btn-circle btn-sm ml-2 flex-shrink-0">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                <p id="modalDesc" class="text-xs text-gray-400 mb-4 leading-relaxed"></p>
+                <p id="modalDesc" class="text-xs mb-4 leading-relaxed"></p>
                 <div id="modalTags" class="mb-4"></div>
                 <div id="modalRows"></div>
             </div>
@@ -231,10 +503,10 @@
     <div id="editModal" onclick="closeOnBackdrop(event, 'editModal')">
         <div class="edit-modal-box">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="font-black text-xl text-gray-800">
-                    <i class="fa-solid fa-pen mr-2 text-warning"></i> Edit Metadata
+                <h3 class="font-black text-xl">
+                    <i class="fa-solid fa-pen mr-2" style="color: #f59e0b"></i> Edit Metadata
                 </h3>
-                <button onclick="closeModal('editModal')" class="btn btn-ghost btn-circle btn-sm">
+                <button onclick="closeModal('editModal')" class="btn btn-close btn-circle btn-sm">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -243,21 +515,20 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
                 <div class="form-control">
-                    <label class="label"><span class="label-text font-bold">Title</span></label>
-                    <input type="text" name="title" id="editTitle" class="input input-bordered input-warning w-full" />
+                    <label class="label"><span class="label-text">Title</span></label>
+                    <input type="text" name="title" id="editTitle" class="input input-bordered w-full" />
                 </div>
 
                 <div class="form-control">
-                    <label class="label"><span class="label-text font-bold">Description</span></label>
+                    <label class="label"><span class="label-text">Description</span></label>
                     <textarea name="description" id="editDescription"
-                              class="textarea textarea-bordered textarea-warning w-full h-20"></textarea>
+                              class="textarea textarea-bordered w-full h-20"></textarea>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
-
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-bold">Category</span></label>
-                        <select name="category" id="editCategory" class="select select-bordered select-warning w-full">
+                        <label class="label"><span class="label-text">Category</span></label>
+                        <select name="category" id="editCategory" class="select select-bordered w-full">
                             <option value="">—</option>
                             <option>Nature</option><option>Architecture</option>
                             <option>People &amp; Portraits</option><option>Travel</option>
@@ -268,8 +539,8 @@
                     </div>
 
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-bold">Type</span></label>
-                        <select name="type" id="editType" class="select select-bordered select-warning w-full">
+                        <label class="label"><span class="label-text">Type</span></label>
+                        <select name="type" id="editType" class="select select-bordered w-full">
                             <option value="">—</option>
                             <option>Photograph</option><option>Illustration</option>
                             <option>Screenshot</option><option>Render / CGI</option>
@@ -278,8 +549,8 @@
                     </div>
 
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-bold">Format</span></label>
-                        <select name="format" id="editFormat" class="select select-bordered select-warning w-full">
+                        <label class="label"><span class="label-text">Format</span></label>
+                        <select name="format" id="editFormat" class="select select-bordered w-full">
                             <option value="">—</option>
                             <option>JPEG</option><option>PNG</option><option>WEBP</option>
                             <option>GIF</option><option>TIFF</option><option>RAW</option>
@@ -288,8 +559,8 @@
                     </div>
 
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-bold">Resolution</span></label>
-                        <select name="resolution" id="editResolution" class="select select-bordered select-warning w-full">
+                        <label class="label"><span class="label-text">Resolution</span></label>
+                        <select name="resolution" id="editResolution" class="select select-bordered w-full">
                             <option value="">—</option>
                             <option>720p (1280x720)</option><option>1080p (1920x1080)</option>
                             <option>2K (2560x1440)</option><option>4K (3840x2160)</option>
@@ -298,41 +569,41 @@
                     </div>
 
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-bold">Photographer</span></label>
+                        <label class="label"><span class="label-text">Photographer</span></label>
                         <input type="text" name="photographer" id="editPhotographer"
-                               class="input input-bordered input-warning w-full" />
+                               class="input input-bordered w-full" />
                     </div>
 
                     <div class="form-control">
-                        <label class="label"><span class="label-text font-bold">Camera</span></label>
+                        <label class="label"><span class="label-text">Camera</span></label>
                         <input type="text" name="camera" id="editCamera"
-                               class="input input-bordered input-warning w-full" />
+                               class="input input-bordered w-full" />
                     </div>
 
                     <div class="form-control col-span-2">
-                        <label class="label"><span class="label-text font-bold">Location</span></label>
+                        <label class="label"><span class="label-text">Location</span></label>
                         <input type="text" name="location" id="editLocation"
-                               class="input input-bordered input-warning w-full" />
+                               class="input input-bordered w-full" />
                     </div>
 
                     <div class="form-control col-span-2">
                         <label class="label">
-                            <span class="label-text font-bold">Tags</span>
-                            <span class="label-text-alt text-gray-400">Comma-separated</span>
+                            <span class="label-text">Tags</span>
+                            <span class="label-text-alt">Comma-separated</span>
                         </label>
                         <input type="text" name="tags" id="editTags"
-                               class="input input-bordered input-warning w-full" />
+                               class="input input-bordered w-full" />
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-warning btn-block mt-2 font-bold text-base">
+                <button type="submit" class="btn btn-save btn-block mt-2 text-base">
                     <i class="fa-solid fa-floppy-disk mr-2"></i> Save Changes
                 </button>
             </form>
         </div>
     </div>
 
-    <footer class="footer footer-center p-10 bg-base-300 text-base-content mt-10">
+    <footer class="footer footer-center p-10 footer-custom mt-10">
         <div><p class="font-bold">PicSource &copy; 2026</p></div>
     </footer>
 
@@ -342,7 +613,6 @@
                 ? String(val) : '<span class="meta-null">—</span>';
         }
 
-        // ── VIEW MODAL ──────────────────────────────────────────
         function openModal(card) {
             const m = JSON.parse(card.getAttribute('data-meta'));
             document.getElementById('modalImg').src           = m.src;
@@ -378,7 +648,6 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // ── EDIT MODAL ──────────────────────────────────────────
         function openEdit(data) {
             document.getElementById('editForm').action = `/update/${data.filename}`;
             document.getElementById('editTitle').value        = data.title        || '';
@@ -388,7 +657,6 @@
             document.getElementById('editLocation').value     = data.location     || '';
             document.getElementById('editTags').value         = (data.tags || []).join(', ');
 
-            // Set select values
             ['editCategory', 'editType', 'editFormat', 'editResolution'].forEach(id => {
                 const key = id.replace('edit', '').toLowerCase();
                 const sel = document.getElementById(id);
@@ -401,7 +669,6 @@
             document.body.style.overflow = 'hidden';
         }
 
-        // ── CLOSE ───────────────────────────────────────────────
         function closeModal(id) {
             document.getElementById(id).classList.remove('open');
             document.body.style.overflow = '';
