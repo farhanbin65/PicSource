@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,88 +7,78 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-deep:    #0a0613;
-            --bg-base:    #110821;
-            --bg-card:    #1a0f2e;
-            --bg-elevated:#241540;
-            --border:     rgba(139, 92, 246, 0.15);
-            --border-hover: rgba(139, 92, 246, 0.4);
-            --primary:    #8b5cf6;
-            --primary-light:#a78bfa;
-            --primary-glow: rgba(139, 92, 246, 0.4);
-            --accent:     #c084fc;
-            --text-bright:#f5f3ff;
-            --text-muted: #a89cc8;
-            --text-dim:   #6b5b8e;
+            --bg-page:    #f5f1ea;
+            --bg-card:    #ffffff;
+            --bg-soft:    #ede7dc;
+            --bg-elevated:#faf7f2;
+            --border:     #e5dfd2;
+            --border-strong: #d4ccba;
+            --gold:       #b8945a;
+            --gold-deep:  #9a7846;
+            --text-bright:#1a1815;
+            --text-base:  #3d3a35;
+            --text-muted: #7a746a;
+            --text-dim:   #a59f93;
         }
 
         * { font-family: 'Inter', system-ui, sans-serif; }
+        .serif { font-family: 'Fraunces', Georgia, serif; }
 
         body {
-            background: var(--bg-deep);
-            color: var(--text-bright);
-            background-image:
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.15), transparent),
-                radial-gradient(ellipse 60% 50% at 80% 50%, rgba(168, 85, 247, 0.08), transparent);
+            background: var(--bg-page);
+            color: var(--text-base);
             min-height: 100vh;
         }
 
-        /* NAVBAR */
         .navbar-custom {
-            background: rgba(10, 6, 19, 0.7);
-            backdrop-filter: blur(20px);
+            background: rgba(245, 241, 234, 0.85);
+            backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
         }
         .logo-text {
-            background: linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Fraunces', Georgia, serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
         }
+        .logo-pic { color: var(--text-bright); }
+        .logo-source { color: var(--gold); }
+
         .nav-link {
             color: var(--text-muted);
             transition: color 0.2s;
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
+            font-weight: 500;
         }
-        .nav-link:hover { color: var(--text-bright); background: rgba(139, 92, 246, 0.1); }
+        .nav-link:hover { color: var(--text-bright); background: var(--bg-soft); }
 
-        .avatar-circle {
-            background: linear-gradient(135deg, #8b5cf6, #c084fc);
-        }
+        .avatar-circle { background: var(--gold); }
 
-        /* CARD */
         .upload-card {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(139, 92, 246, 0.12);
+            box-shadow: 0 10px 40px rgba(60, 50, 30, 0.08);
         }
 
         .icon-circle {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(192, 132, 252, 0.15));
-            border: 1px solid var(--border-hover);
-            box-shadow: 0 0 40px rgba(139, 92, 246, 0.3);
+            background: var(--bg-soft);
+            border: 1px solid var(--border-strong);
         }
-        .icon-circle i {
-            background: linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+        .icon-circle i { color: var(--gold); }
 
         .title-gradient {
-            background: linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Fraunces', Georgia, serif;
+            color: var(--text-bright);
             letter-spacing: -0.02em;
+            font-weight: 700;
         }
+        .title-gradient .accent { color: var(--gold); font-style: italic; }
 
-        /* FORM CONTROLS */
-        .label-text { color: var(--text-muted) !important; font-weight: 600; }
+        .label-text { color: var(--text-base) !important; font-weight: 600; font-size: 0.85rem; }
         .label-text-alt { color: var(--text-dim) !important; }
 
         .input-custom,
@@ -105,43 +95,40 @@
         .input-custom:focus,
         .textarea-custom:focus,
         .select-custom:focus {
-            border-color: var(--primary) !important;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2) !important;
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 0 3px rgba(184, 148, 90, 0.15) !important;
             outline: none;
         }
-        .select-custom option { background: var(--bg-elevated); color: var(--text-bright); }
 
-        /* FILE INPUT */
         .file-input-custom {
             background: var(--bg-elevated) !important;
             border: 1px solid var(--border) !important;
             color: var(--text-bright) !important;
         }
         .file-input-custom::file-selector-button {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed) !important;
+            background: var(--gold) !important;
             color: white !important;
             border: none !important;
-            font-weight: 700;
+            font-weight: 600;
         }
         .file-input-custom:focus {
-            border-color: var(--primary) !important;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2) !important;
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 0 3px rgba(184, 148, 90, 0.15) !important;
             outline: none;
         }
 
-        /* BUTTONS */
         .btn-primary-custom {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            background: var(--gold);
             color: white;
             border: none;
-            box-shadow: 0 4px 20px var(--primary-glow);
+            box-shadow: 0 1px 3px rgba(184, 148, 90, 0.25);
             transition: all 0.2s;
-            font-weight: 700;
+            font-weight: 600;
         }
         .btn-primary-custom:hover {
+            background: var(--gold-deep);
             transform: translateY(-1px);
-            box-shadow: 0 6px 28px var(--primary-glow);
-            background: linear-gradient(135deg, #9d6efb, #8b5cf6);
+            box-shadow: 0 4px 12px rgba(184, 148, 90, 0.35);
         }
         .btn-ghost-custom {
             color: var(--text-muted);
@@ -149,67 +136,49 @@
         }
         .btn-ghost-custom:hover {
             color: var(--text-bright);
-            background: rgba(139, 92, 246, 0.1);
+            background: var(--bg-soft);
         }
 
-        /* DIVIDER */
-        .divider-custom { color: var(--text-dim) !important; }
+        .divider-custom { color: var(--text-muted) !important; }
         .divider-custom::before,
         .divider-custom::after { background: var(--border) !important; }
 
-        /* FLASH */
-        .flash-success {
-            background: rgba(16, 185, 129, 0.15); color: #6ee7b7;
-            border-left: 4px solid #10b981; backdrop-filter: blur(8px);
-        }
-        .flash-error {
-            background: rgba(239, 68, 68, 0.15); color: #fca5a5;
-            border-left: 4px solid #ef4444; backdrop-filter: blur(8px);
-        }
-        .flash-warning {
-            background: rgba(245, 158, 11, 0.15); color: #fcd34d;
-            border-left: 4px solid #f59e0b; backdrop-filter: blur(8px);
-        }
-        .flash-info {
-            background: rgba(139, 92, 246, 0.15); color: var(--primary-light);
-            border-left: 4px solid var(--primary); backdrop-filter: blur(8px);
-        }
+        .flash-success { background: #e8f5e9; color: #2e6b32; border-left: 4px solid #4caf50; }
+        .flash-error   { background: #fdecea; color: #a93226; border-left: 4px solid #e74c3c; }
+        .flash-warning { background: #fef5e7; color: #8b6914; border-left: 4px solid #f39c12; }
+        .flash-info    { background: #e8f0f5; color: #2c5876; border-left: 4px solid #3498db; }
 
-        /* DROPDOWN */
         .dropdown-content {
             background: var(--bg-card) !important;
             border: 1px solid var(--border);
         }
-        .dropdown-content li > a { color: var(--text-muted); }
-        .dropdown-content li > a:hover { background: rgba(139, 92, 246, 0.1); color: var(--text-bright); }
-        .menu-title { color: var(--text-dim) !important; }
+        .dropdown-content li > a { color: var(--text-base); }
+        .dropdown-content li > a:hover { background: var(--bg-soft); color: var(--text-bright); }
+        .menu-title { color: var(--text-muted) !important; }
 
-        /* FOOTER */
         .footer-custom {
-            background: var(--bg-base);
+            background: var(--bg-soft);
             border-top: 1px solid var(--border);
-            color: var(--text-dim);
+            color: var(--text-muted);
         }
 
-        /* SCROLLBAR */
         ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-track { background: var(--bg-page); }
         ::-webkit-scrollbar-thumb {
-            background: var(--bg-elevated);
+            background: var(--border-strong);
             border-radius: 10px;
-            border: 2px solid var(--bg-deep);
+            border: 2px solid var(--bg-page);
         }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- NAVBAR with auth -->
     <div class="navbar navbar-custom px-8 sticky top-0 z-50">
         <div class="flex-1">
-            <a href="/" class="btn btn-ghost text-xl font-black hover:bg-transparent">
-                <i class="fa-solid fa-camera mr-2" style="color: var(--primary-light)"></i>
-                <span class="logo-text">PicSource</span>
+            <a href="/" class="btn btn-ghost hover:bg-transparent">
+                <i class="fa-solid fa-camera mr-2 text-xl" style="color: var(--text-bright)"></i>
+                <span class="logo-text"><span class="logo-pic">Pic</span><span class="logo-source">Source</span></span>
             </a>
         </div>
         <div class="flex-none">
@@ -227,9 +196,9 @@
                                 <span class="font-semibold text-sm hidden sm:inline" style="color: var(--text-bright)">{{ session['username'] }}</span>
                                 <i class="fa-solid fa-chevron-down text-xs" style="color: var(--text-muted)"></i>
                             </label>
-                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-2xl rounded-box w-52 mt-2">
+                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-xl rounded-box w-52 mt-2">
                                 <li class="menu-title text-xs">Signed in as <strong>{{ session['username'] }}</strong></li>
-                                <li><a href="/logout" style="color:#fca5a5">
+                                <li><a href="/logout" style="color:#c0392b">
                                     <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
                                 </a></li>
                             </ul>
@@ -240,7 +209,6 @@
         </div>
     </div>
 
-    <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="container mx-auto px-4 pt-4 max-w-2xl">
@@ -254,14 +222,14 @@
     {% endwith %}
 
     <div class="container mx-auto px-4 py-12 flex-grow flex justify-center items-start">
-        <div class="upload-card card w-full max-w-2xl rounded-2xl">
+        <div class="upload-card card w-full max-w-2xl rounded-xl">
             <div class="card-body p-8 md:p-10">
                 <div class="flex flex-col items-center text-center mb-8">
                     <div class="icon-circle p-6 rounded-full mb-4 inline-flex items-center justify-center">
                         <i class="fa-solid fa-cloud-arrow-up text-5xl"></i>
                     </div>
-                    <h2 class="text-3xl font-black title-gradient">Upload Image</h2>
-                    <p style="color: var(--text-muted)" class="mt-2">Uploading as <strong style="color: var(--primary-light)">{{ session.get('username', '') }}</strong></p>
+                    <h2 class="text-3xl title-gradient">Upload <span class="accent">Image</span></h2>
+                    <p style="color: var(--text-muted)" class="mt-2 text-sm">Uploading as <strong style="color: var(--gold-deep)">{{ session.get('username', '') }}</strong></p>
                 </div>
 
                 <form action="/upload" method="POST" enctype="multipart/form-data" class="w-full space-y-5">
@@ -402,7 +370,7 @@
     </div>
 
     <footer class="footer footer-center p-6 footer-custom">
-        <div><p class="font-bold">PicSource &copy; 2026</p></div>
+        <div><p class="font-bold serif">PicSource &copy; 2026</p></div>
     </footer>
 </body>
 </html>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,164 +8,187 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-deep:    #0a0613;
-            --bg-base:    #110821;
-            --bg-card:    #1a0f2e;
-            --bg-elevated:#241540;
-            --border:     rgba(139, 92, 246, 0.15);
-            --border-hover: rgba(139, 92, 246, 0.4);
-            --primary:    #8b5cf6;
-            --primary-light:#a78bfa;
-            --primary-glow: rgba(139, 92, 246, 0.4);
-            --accent:     #c084fc;
-            --text-bright:#f5f3ff;
-            --text-muted: #a89cc8;
-            --text-dim:   #6b5b8e;
+            --bg-page:    #f5f1ea;
+            --bg-card:    #ffffff;
+            --bg-soft:    #ede7dc;
+            --bg-elevated:#faf7f2;
+            --border:     #e5dfd2;
+            --border-strong: #d4ccba;
+            --gold:       #b8945a;
+            --gold-deep:  #9a7846;
+            --gold-soft:  #d4b88a;
+            --gold-bg:    #f0e6d2;
+            --text-bright:#1a1815;
+            --text-base:  #3d3a35;
+            --text-muted: #7a746a;
+            --text-dim:   #a59f93;
         }
 
         * { font-family: 'Inter', system-ui, sans-serif; }
+        .serif { font-family: 'Fraunces', Georgia, serif; }
 
         body {
-            background: var(--bg-deep);
-            color: var(--text-bright);
-            background-image:
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.15), transparent),
-                radial-gradient(ellipse 60% 50% at 80% 50%, rgba(168, 85, 247, 0.08), transparent);
+            background: var(--bg-page);
+            color: var(--text-base);
             min-height: 100vh;
         }
 
         /* NAVBAR */
         .navbar-custom {
-            background: rgba(10, 6, 19, 0.7);
-            backdrop-filter: blur(20px);
+            background: rgba(245, 241, 234, 0.85);
+            backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
         }
         .logo-text {
-            background: linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Fraunces', Georgia, serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
         }
+        .logo-pic { color: var(--text-bright); }
+        .logo-source { color: var(--gold); }
+
         .nav-link {
             color: var(--text-muted);
             transition: color 0.2s;
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
+            font-weight: 500;
         }
-        .nav-link:hover { color: var(--text-bright); background: rgba(139, 92, 246, 0.1); }
+        .nav-link:hover { color: var(--text-bright); background: var(--bg-soft); }
 
         .btn-primary-custom {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            background: var(--gold);
             color: white;
             border: none;
-            box-shadow: 0 4px 20px var(--primary-glow);
             transition: all 0.2s;
             font-weight: 600;
+            box-shadow: 0 1px 3px rgba(184, 148, 90, 0.25);
         }
         .btn-primary-custom:hover {
+            background: var(--gold-deep);
             transform: translateY(-1px);
-            box-shadow: 0 6px 28px var(--primary-glow);
-            background: linear-gradient(135deg, #9d6efb, #8b5cf6);
+            box-shadow: 0 4px 12px rgba(184, 148, 90, 0.35);
         }
 
         .avatar-circle {
-            background: linear-gradient(135deg, #8b5cf6, #c084fc);
+            background: var(--gold);
         }
         .avatar-circle.admin {
-            background: linear-gradient(135deg, #ef4444, #f97316);
+            background: #c0392b;
         }
 
         /* HERO */
         .hero-title {
-            background: linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Fraunces', Georgia, serif;
+            color: var(--text-bright);
             letter-spacing: -0.03em;
+            font-weight: 700;
+        }
+        .hero-title .accent {
+            color: var(--gold);
+            font-style: italic;
         }
 
         /* IMAGE CARD */
         .img-card {
             position: relative;
             overflow: hidden;
-            border-radius: 1rem;
+            border-radius: 0.75rem;
             background: var(--bg-card);
             border: 1px solid var(--border);
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
         }
         .img-card:hover {
-            border-color: var(--border-hover);
-            box-shadow: 0 16px 48px rgba(139, 92, 246, 0.25);
-            transform: translateY(-6px);
+            border-color: var(--border-strong);
+            box-shadow: 0 12px 32px rgba(60, 50, 30, 0.12);
+            transform: translateY(-4px);
         }
         .img-card img {
             width: 100%;
-            height: 220px;
+            height: 240px;
             object-fit: cover;
             display: block;
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .img-card:hover img { transform: scale(1.06); }
+        .img-card:hover img { transform: scale(1.04); }
+
+        .category-badge {
+            position: absolute;
+            top: 14px; left: 14px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            color: var(--text-bright);
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+        }
 
         .img-card-body {
-            padding: 1rem 1.1rem 1.1rem;
-            background: linear-gradient(180deg, transparent, rgba(36, 21, 64, 0.4));
+            padding: 1.1rem 1.25rem 1.25rem;
+            border-top: 1px solid var(--border);
         }
         .img-card-title {
+            font-family: 'Fraunces', Georgia, serif;
             color: var(--text-bright);
-            font-weight: 700;
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 1.05rem;
+            margin-bottom: 0.4rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            letter-spacing: -0.01em;
         }
         .img-card-meta {
             display: flex;
             justify-content: space-between;
-            font-size: 0.7rem;
-            color: var(--text-dim);
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
         }
-        .img-card-meta i { color: var(--primary-light); margin-right: 4px; }
+        .img-card-meta .photographer { font-weight: 500; }
+        .img-card-meta .size { color: var(--text-dim); font-size: 0.7rem; }
 
         .card-actions-overlay {
-            position: absolute; top: 10px; right: 10px; z-index: 10;
+            position: absolute; top: 14px; right: 14px; z-index: 10;
             display: none; gap: 6px;
         }
         .img-card:hover .card-actions-overlay { display: flex; }
 
         .btn-edit {
-            background: rgba(245, 158, 11, 0.95);
-            color: white;
-            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--gold-deep);
+            border: 1px solid var(--border);
             backdrop-filter: blur(8px);
         }
-        .btn-edit:hover { background: rgb(245, 158, 11); }
+        .btn-edit:hover { background: white; color: var(--gold); }
         .btn-delete {
-            background: rgba(239, 68, 68, 0.95);
-            color: white;
-            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            color: #c0392b;
+            border: 1px solid var(--border);
             backdrop-filter: blur(8px);
         }
-        .btn-delete:hover { background: rgb(239, 68, 68); }
+        .btn-delete:hover { background: white; color: #a93226; }
 
         /* EMPTY STATE */
         .empty-state {
             background: var(--bg-card);
-            border: 2px dashed var(--border);
-            border-radius: 1.5rem;
+            border: 2px dashed var(--border-strong);
+            border-radius: 1rem;
         }
 
         /* MODALS */
         #metaModal, #editModal {
             display: none; position: fixed; inset: 0; z-index: 9999;
-            background: rgba(5, 2, 10, 0.85);
-            backdrop-filter: blur(8px);
+            background: rgba(26, 24, 21, 0.55);
+            backdrop-filter: blur(6px);
             align-items: center; justify-content: center;
         }
         #metaModal.open, #editModal.open { display: flex; }
@@ -173,48 +196,52 @@
         .modal-box {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 1.25rem;
+            border-radius: 1rem;
             width: 95%; max-width: 750px;
             max-height: 88vh; overflow: hidden;
             display: flex; flex-direction: column;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(139, 92, 246, 0.15);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
             animation: popIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         @keyframes popIn {
-            from { transform: scale(0.93); opacity: 0; }
+            from { transform: scale(0.95); opacity: 0; }
             to { transform: scale(1); opacity: 1; }
         }
         @media (min-width: 640px) { .modal-box { flex-direction: row; } }
 
-        .modal-img-side { flex: 1; min-height: 220px; background: var(--bg-deep); }
+        .modal-img-side { flex: 1; min-height: 220px; background: var(--bg-soft); }
         .modal-img-side img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .modal-meta-side { flex: 1; padding: 1.75rem; overflow-y: auto; }
 
-        .modal-meta-side h3 { color: var(--text-bright); }
+        .modal-meta-side h3 {
+            font-family: 'Fraunces', Georgia, serif;
+            color: var(--text-bright);
+            letter-spacing: -0.01em;
+        }
         #modalDesc { color: var(--text-muted); }
 
         .meta-row {
             display: flex; justify-content: space-between; align-items: flex-start;
-            padding: 8px 0;
+            padding: 9px 0;
             border-bottom: 1px solid var(--border);
             font-size: 0.8rem; gap: 8px;
         }
         .meta-row:last-child { border-bottom: none; }
         .meta-label {
-            color: var(--text-dim);
-            font-weight: 700; text-transform: uppercase;
+            color: var(--text-muted);
+            font-weight: 600; text-transform: uppercase;
             font-size: 0.65rem; letter-spacing: 0.06em;
             min-width: 90px; padding-top: 2px;
         }
-        .meta-label i { color: var(--primary-light); }
+        .meta-label i { color: var(--gold); }
         .meta-value { color: var(--text-bright); text-align: right; word-break: break-word; }
         .meta-null  { color: var(--text-dim); font-style: italic; }
 
         .tag-badge {
             display: inline-block;
-            background: rgba(139, 92, 246, 0.15);
-            color: var(--primary-light);
-            border: 1px solid rgba(139, 92, 246, 0.3);
+            background: var(--gold-bg);
+            color: var(--gold-deep);
+            border: 1px solid var(--gold-soft);
             border-radius: 999px;
             padding: 3px 10px;
             font-size: 0.7rem; font-weight: 600;
@@ -225,16 +252,19 @@
         .edit-modal-box {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 1.25rem;
+            border-radius: 1rem;
             width: 95%; max-width: 640px;
             max-height: 90vh; overflow-y: auto;
             padding: 2rem;
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 60px rgba(139, 92, 246, 0.15);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.25);
             animation: popIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .edit-modal-box h3 { color: var(--text-bright); }
-        .edit-modal-box .label-text { color: var(--text-muted); font-weight: 600; }
+        .edit-modal-box h3 {
+            font-family: 'Fraunces', Georgia, serif;
+            color: var(--text-bright);
+        }
+        .edit-modal-box .label-text { color: var(--text-base); font-weight: 600; font-size: 0.85rem; }
         .edit-modal-box .label-text-alt { color: var(--text-dim); }
 
         .edit-modal-box input,
@@ -248,90 +278,70 @@
         .edit-modal-box input:focus,
         .edit-modal-box textarea:focus,
         .edit-modal-box select:focus {
-            border-color: var(--primary) !important;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2) !important;
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 0 3px rgba(184, 148, 90, 0.15) !important;
             outline: none;
         }
-        .edit-modal-box select option { background: var(--bg-elevated); color: var(--text-bright); }
 
         .btn-save {
-            background: linear-gradient(135deg, #f59e0b, #d97706);
+            background: var(--gold);
             color: white;
             border: none;
-            font-weight: 700;
+            font-weight: 600;
             transition: all 0.2s;
+            box-shadow: 0 1px 3px rgba(184, 148, 90, 0.25);
         }
         .btn-save:hover {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            background: var(--gold-deep);
             transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+            box-shadow: 0 4px 12px rgba(184, 148, 90, 0.35);
         }
 
         .btn-close {
             color: var(--text-muted);
             background: transparent;
         }
-        .btn-close:hover { color: var(--text-bright); background: rgba(139, 92, 246, 0.1); }
+        .btn-close:hover { color: var(--text-bright); background: var(--bg-soft); }
 
-        /* FLASH MESSAGES */
-        .flash-success {
-            background: rgba(16, 185, 129, 0.15);
-            color: #6ee7b7;
-            border-left: 4px solid #10b981;
-            backdrop-filter: blur(8px);
-        }
-        .flash-error {
-            background: rgba(239, 68, 68, 0.15);
-            color: #fca5a5;
-            border-left: 4px solid #ef4444;
-            backdrop-filter: blur(8px);
-        }
-        .flash-warning {
-            background: rgba(245, 158, 11, 0.15);
-            color: #fcd34d;
-            border-left: 4px solid #f59e0b;
-            backdrop-filter: blur(8px);
-        }
-        .flash-info {
-            background: rgba(139, 92, 246, 0.15);
-            color: var(--primary-light);
-            border-left: 4px solid var(--primary);
-            backdrop-filter: blur(8px);
-        }
+        /* FLASH */
+        .flash-success { background: #e8f5e9; color: #2e6b32; border-left: 4px solid #4caf50; }
+        .flash-error   { background: #fdecea; color: #a93226; border-left: 4px solid #e74c3c; }
+        .flash-warning { background: #fef5e7; color: #8b6914; border-left: 4px solid #f39c12; }
+        .flash-info    { background: #e8f0f5; color: #2c5876; border-left: 4px solid #3498db; }
 
         /* DROPDOWN */
         .dropdown-content {
             background: var(--bg-card) !important;
             border: 1px solid var(--border);
         }
-        .dropdown-content li > a { color: var(--text-muted); }
-        .dropdown-content li > a:hover { background: rgba(139, 92, 246, 0.1); color: var(--text-bright); }
-        .menu-title { color: var(--text-dim) !important; }
+        .dropdown-content li > a { color: var(--text-base); }
+        .dropdown-content li > a:hover { background: var(--bg-soft); color: var(--text-bright); }
+        .menu-title { color: var(--text-muted) !important; }
 
         /* FOOTER */
         .footer-custom {
-            background: var(--bg-base);
+            background: var(--bg-soft);
             border-top: 1px solid var(--border);
-            color: var(--text-dim);
+            color: var(--text-muted);
         }
 
         /* BADGE */
         .badge-admin {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
+            background: #c0392b;
             color: white;
             border: none;
-            font-weight: 700;
+            font-weight: 600;
         }
 
         /* SCROLLBAR */
         ::-webkit-scrollbar { width: 10px; }
-        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-track { background: var(--bg-page); }
         ::-webkit-scrollbar-thumb {
-            background: var(--bg-elevated);
+            background: var(--border-strong);
             border-radius: 10px;
-            border: 2px solid var(--bg-deep);
+            border: 2px solid var(--bg-page);
         }
-        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+        ::-webkit-scrollbar-thumb:hover { background: var(--gold); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -339,9 +349,9 @@
     <!-- NAVBAR -->
     <div class="navbar navbar-custom px-8 sticky top-0 z-50">
         <div class="flex-1">
-            <a href="/" class="btn btn-ghost text-xl font-black hover:bg-transparent">
-                <i class="fa-solid fa-camera mr-2" style="color: var(--primary-light)"></i>
-                <span class="logo-text">PicSource</span>
+            <a href="/" class="btn btn-ghost hover:bg-transparent">
+                <i class="fa-solid fa-camera mr-2 text-xl" style="color: var(--text-bright)"></i>
+                <span class="logo-text"><span class="logo-pic">Pic</span><span class="logo-source">Source</span></span>
             </a>
         </div>
         <div class="flex-none">
@@ -363,19 +373,17 @@
                                 {% endif %}
                                 <i class="fa-solid fa-chevron-down text-xs" style="color: var(--text-muted)"></i>
                             </label>
-                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-2xl rounded-box w-52 mt-2">
-                                <li class="menu-title text-xs">Signed in as <strong>{{ session['username'] }}</strong>{% if session.get('is_admin') %} <span style="color:#fca5a5">(Admin)</span>{% endif %}</li>
-                                <li><a href="/logout" style="color:#fca5a5">
+                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow-xl rounded-box w-52 mt-2">
+                                <li class="menu-title text-xs">Signed in as <strong>{{ session['username'] }}</strong>{% if session.get('is_admin') %} <span style="color:#c0392b">(Admin)</span>{% endif %}</li>
+                                <li><a href="/logout" style="color:#c0392b">
                                     <i class="fa-solid fa-right-from-bracket mr-2"></i> Logout
                                 </a></li>
                             </ul>
                         </div>
                     </li>
                 {% else %}
-                    <li><a href="/login" class="nav-link"><i class="fa-solid fa-right-to-bracket mr-1"></i> Login</a></li>
-                    <li><a href="/register" class="btn btn-primary-custom btn-sm ml-1">
-                        <i class="fa-solid fa-user-plus mr-1"></i> Register
-                    </a></li>
+                    <li><a href="/login" class="nav-link">Sign In</a></li>
+                    <li><a href="/register" class="btn btn-primary-custom btn-sm ml-1 px-5">Register</a></li>
                 {% endif %}
             </ul>
         </div>
@@ -395,8 +403,8 @@
     <!-- GALLERY -->
     <div class="container mx-auto px-4 py-16 flex-grow">
         <div class="text-center mb-14">
-            <h1 class="text-5xl md:text-6xl font-black mb-4 hero-title">Your Gallery</h1>
-            <p style="color: var(--text-muted)" class="text-lg">Click any image to view full metadata</p>
+            <h1 class="text-5xl md:text-6xl mb-4 hero-title">Your <span class="accent">Gallery</span></h1>
+            <p style="color: var(--text-muted)" class="text-base">Click any image to view full metadata</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -420,47 +428,51 @@
                     "tags":         img.tags         | default([], true)
                 } | tojson }}' onclick="openModal(this)">
 
-                    <img src="{{ img.image_url or '' }}"
-                         alt="{{ img.title or img.filename }}" />
+                    <div style="position: relative;">
+                        <img src="{{ img.image_url or '' }}"
+                             alt="{{ img.title or img.filename }}" />
+                        {% if img.category %}
+                        <span class="category-badge">{{ img.category }}</span>
+                        {% endif %}
 
-                    {% if session.get('is_admin') %}
-                    <div class="card-actions-overlay" onclick="event.stopPropagation()">
-                        <button onclick='openEdit({{ {
-                            "filename":     img.filename     | default("", true),
-                            "title":        img.title        | default("", true),
-                            "description":  img.description  | default("", true),
-                            "category":     img.category     | default("", true),
-                            "type":         img.type         | default("", true),
-                            "format":       img.format       | default("", true),
-                            "resolution":   img.resolution   | default("", true),
-                            "photographer": img.photographer | default("", true),
-                            "camera":       img.camera       | default("", true),
-                            "location":     img.location     | default("", true),
-                            "tags":         img.tags         | default([], true)
-                        } | tojson }})'
-                        class="btn btn-edit btn-circle btn-sm shadow-lg">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-
-                        <form action="/delete/{{ img.filename }}" method="POST">
-                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                            <button type="submit"
-                                    onclick="return confirm('Delete this image? This cannot be undone.')"
-                                    class="btn btn-delete btn-circle btn-sm shadow-lg">
-                                <i class="fa-solid fa-trash"></i>
+                        {% if session.get('is_admin') %}
+                        <div class="card-actions-overlay" onclick="event.stopPropagation()">
+                            <button onclick='openEdit({{ {
+                                "filename":     img.filename     | default("", true),
+                                "title":        img.title        | default("", true),
+                                "description":  img.description  | default("", true),
+                                "category":     img.category     | default("", true),
+                                "type":         img.type         | default("", true),
+                                "format":       img.format       | default("", true),
+                                "resolution":   img.resolution   | default("", true),
+                                "photographer": img.photographer | default("", true),
+                                "camera":       img.camera       | default("", true),
+                                "location":     img.location     | default("", true),
+                                "tags":         img.tags         | default([], true)
+                            } | tojson }})'
+                            class="btn btn-edit btn-circle btn-sm shadow-lg">
+                                <i class="fa-solid fa-pen"></i>
                             </button>
-                        </form>
+
+                            <form action="/delete/{{ img.filename }}" method="POST">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit"
+                                        onclick="return confirm('Delete this image? This cannot be undone.')"
+                                        class="btn btn-delete btn-circle btn-sm shadow-lg">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                        {% endif %}
                     </div>
-                    {% endif %}
 
                     <div class="img-card-body">
                         <h2 class="img-card-title">
                             {{ img.title or img.filename }}
                         </h2>
                         <div class="img-card-meta">
-                            <span><i class="fa-solid fa-layer-group"></i>{{ img.category or '—' }}</span>
-                            <span><i class="fa-solid fa-user"></i>{{ img.photographer or '—' }}</span>
-                            <span><i class="fa-solid fa-weight-hanging"></i>{{ img.size_kb or '—' }} KB</span>
+                            <span class="photographer">{{ img.photographer or '—' }}</span>
+                            <span class="size">{{ img.size_kb or '—' }} KB</span>
                         </div>
                     </div>
                 </div>
@@ -468,7 +480,7 @@
             {% else %}
                 <div class="col-span-full text-center py-24 empty-state">
                     <i class="fa-regular fa-folder-open text-7xl mb-4" style="color: var(--text-dim)"></i>
-                    <p class="text-2xl font-bold" style="color: var(--text-muted)">No images yet</p>
+                    <p class="text-2xl font-bold serif" style="color: var(--text-muted)">No images yet</p>
                     {% if session.get('username') %}
                         <a href="/upload-page" class="btn btn-primary-custom mt-6">Upload One Now</a>
                     {% else %}
@@ -487,12 +499,12 @@
             </div>
             <div class="modal-meta-side">
                 <div class="flex justify-between items-start mb-2">
-                    <h3 id="modalTitle" class="font-black text-lg leading-snug"></h3>
+                    <h3 id="modalTitle" class="font-bold text-xl leading-snug"></h3>
                     <button onclick="closeModal('metaModal')" class="btn btn-close btn-circle btn-sm ml-2 flex-shrink-0">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
-                <p id="modalDesc" class="text-xs mb-4 leading-relaxed"></p>
+                <p id="modalDesc" class="text-sm mb-4 leading-relaxed"></p>
                 <div id="modalTags" class="mb-4"></div>
                 <div id="modalRows"></div>
             </div>
@@ -503,8 +515,8 @@
     <div id="editModal" onclick="closeOnBackdrop(event, 'editModal')">
         <div class="edit-modal-box">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="font-black text-xl">
-                    <i class="fa-solid fa-pen mr-2" style="color: #f59e0b"></i> Edit Metadata
+                <h3 class="font-bold text-2xl">
+                    <i class="fa-solid fa-pen mr-2 text-base" style="color: var(--gold)"></i> Edit Metadata
                 </h3>
                 <button onclick="closeModal('editModal')" class="btn btn-close btn-circle btn-sm">
                     <i class="fa-solid fa-xmark"></i>
@@ -604,7 +616,7 @@
     </div>
 
     <footer class="footer footer-center p-10 footer-custom mt-10">
-        <div><p class="font-bold">PicSource &copy; 2026</p></div>
+        <div><p class="font-bold serif">PicSource &copy; 2026</p></div>
     </footer>
 
     <script>

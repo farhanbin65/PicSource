@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,83 +7,74 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-deep:    #0a0613;
-            --bg-base:    #110821;
-            --bg-card:    #1a0f2e;
-            --bg-elevated:#241540;
-            --border:     rgba(139, 92, 246, 0.15);
-            --border-hover: rgba(139, 92, 246, 0.4);
-            --primary:    #8b5cf6;
-            --primary-light:#a78bfa;
-            --primary-glow: rgba(139, 92, 246, 0.4);
-            --accent:     #c084fc;
-            --text-bright:#f5f3ff;
-            --text-muted: #a89cc8;
-            --text-dim:   #6b5b8e;
+            --bg-page:    #f5f1ea;
+            --bg-card:    #ffffff;
+            --bg-soft:    #ede7dc;
+            --bg-elevated:#faf7f2;
+            --border:     #e5dfd2;
+            --border-strong: #d4ccba;
+            --gold:       #b8945a;
+            --gold-deep:  #9a7846;
+            --gold-soft:  #d4b88a;
+            --text-bright:#1a1815;
+            --text-base:  #3d3a35;
+            --text-muted: #7a746a;
+            --text-dim:   #a59f93;
         }
 
         * { font-family: 'Inter', system-ui, sans-serif; }
+        .serif { font-family: 'Fraunces', Georgia, serif; }
 
         .auth-bg {
-            background: var(--bg-deep);
-            background-image:
-                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.25), transparent),
-                radial-gradient(ellipse 60% 50% at 20% 80%, rgba(192, 132, 252, 0.12), transparent),
-                radial-gradient(ellipse 60% 50% at 80% 50%, rgba(168, 85, 247, 0.08), transparent);
+            background: var(--bg-page);
             min-height: 100vh;
-            color: var(--text-bright);
+            color: var(--text-base);
         }
 
-        /* NAVBAR */
         .navbar-custom {
-            background: rgba(10, 6, 19, 0.7);
-            backdrop-filter: blur(20px);
+            background: rgba(245, 241, 234, 0.85);
+            backdrop-filter: blur(16px);
             border-bottom: 1px solid var(--border);
         }
         .logo-text {
-            background: linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Fraunces', Georgia, serif;
+            font-weight: 700;
+            font-size: 1.6rem;
+            letter-spacing: -0.02em;
         }
+        .logo-pic { color: var(--text-bright); }
+        .logo-source { color: var(--gold); }
 
-        /* AUTH CARD */
         .auth-card {
             animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             background: var(--bg-card);
             border: 1px solid var(--border);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5), 0 0 60px rgba(139, 92, 246, 0.15);
+            box-shadow: 0 10px 40px rgba(60, 50, 30, 0.08);
         }
         @keyframes slideUp {
-            from { transform: translateY(24px); opacity: 0; }
+            from { transform: translateY(20px); opacity: 0; }
             to   { transform: translateY(0);    opacity: 1; }
         }
 
         .icon-circle {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(192, 132, 252, 0.15));
-            border: 1px solid var(--border-hover);
-            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+            background: var(--bg-soft);
+            border: 1px solid var(--border-strong);
         }
-        .icon-circle i {
-            background: linear-gradient(135deg, #c084fc 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+        .icon-circle i { color: var(--gold); }
 
         .title-gradient {
-            background: linear-gradient(135deg, #ffffff 0%, #c084fc 50%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-family: 'Fraunces', Georgia, serif;
+            color: var(--text-bright);
             letter-spacing: -0.02em;
+            font-weight: 700;
         }
+        .title-gradient .accent { color: var(--gold); font-style: italic; }
 
-        /* INPUTS */
-        .label-text { color: var(--text-muted) !important; }
+        .label-text { color: var(--text-base) !important; font-weight: 600; }
+
         .input-custom {
             background: var(--bg-elevated) !important;
             border: 1px solid var(--border) !important;
@@ -92,84 +83,62 @@
         }
         .input-custom::placeholder { color: var(--text-dim); }
         .input-custom:focus {
-            border-color: var(--primary) !important;
-            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2) !important;
+            border-color: var(--gold) !important;
+            box-shadow: 0 0 0 3px rgba(184, 148, 90, 0.15) !important;
             outline: none;
         }
 
-        /* BUTTONS */
         .btn-primary-custom {
-            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            background: var(--gold);
             color: white;
             border: none;
-            box-shadow: 0 4px 20px var(--primary-glow);
+            box-shadow: 0 1px 3px rgba(184, 148, 90, 0.25);
             transition: all 0.2s;
-            font-weight: 700;
+            font-weight: 600;
         }
         .btn-primary-custom:hover {
+            background: var(--gold-deep);
             transform: translateY(-1px);
-            box-shadow: 0 6px 28px var(--primary-glow);
-            background: linear-gradient(135deg, #9d6efb, #8b5cf6);
+            box-shadow: 0 4px 12px rgba(184, 148, 90, 0.35);
         }
         .btn-outline-custom {
             background: transparent;
-            border: 1px solid var(--border-hover);
+            border: 1px solid var(--border-strong);
             color: var(--text-bright);
-            font-weight: 700;
+            font-weight: 600;
             transition: all 0.2s;
         }
         .btn-outline-custom:hover {
-            background: rgba(139, 92, 246, 0.1);
-            border-color: var(--primary);
+            background: var(--bg-soft);
+            border-color: var(--gold);
             color: var(--text-bright);
         }
 
-        /* DIVIDER */
-        .divider-custom {
-            color: var(--text-dim) !important;
-        }
+        .divider-custom { color: var(--text-muted) !important; }
         .divider-custom::before,
-        .divider-custom::after {
-            background: var(--border) !important;
-        }
+        .divider-custom::after { background: var(--border) !important; }
 
-        /* FLASH */
-        .flash-success {
-            background: rgba(16, 185, 129, 0.15); color: #6ee7b7;
-            border-left: 4px solid #10b981; backdrop-filter: blur(8px);
-        }
-        .flash-error {
-            background: rgba(239, 68, 68, 0.15); color: #fca5a5;
-            border-left: 4px solid #ef4444; backdrop-filter: blur(8px);
-        }
-        .flash-warning {
-            background: rgba(245, 158, 11, 0.15); color: #fcd34d;
-            border-left: 4px solid #f59e0b; backdrop-filter: blur(8px);
-        }
-        .flash-info {
-            background: rgba(139, 92, 246, 0.15); color: var(--primary-light);
-            border-left: 4px solid var(--primary); backdrop-filter: blur(8px);
-        }
+        .flash-success { background: #e8f5e9; color: #2e6b32; border-left: 4px solid #4caf50; }
+        .flash-error   { background: #fdecea; color: #a93226; border-left: 4px solid #e74c3c; }
+        .flash-warning { background: #fef5e7; color: #8b6914; border-left: 4px solid #f39c12; }
+        .flash-info    { background: #e8f0f5; color: #2c5876; border-left: 4px solid #3498db; }
 
-        /* FOOTER */
         .footer-custom {
-            background: var(--bg-base);
+            background: var(--bg-soft);
             border-top: 1px solid var(--border);
-            color: var(--text-dim);
+            color: var(--text-muted);
         }
     </style>
 </head>
 <body class="auth-bg flex flex-col min-h-screen">
 
-    <!-- Minimal navbar -->
     <div class="navbar navbar-custom px-8">
-        <a href="/" class="btn btn-ghost text-xl font-black hover:bg-transparent">
-            <i class="fa-solid fa-camera mr-2" style="color: var(--primary-light)"></i>
-            <span class="logo-text">PicSource</span>
+        <a href="/" class="btn btn-ghost hover:bg-transparent">
+            <i class="fa-solid fa-camera mr-2 text-xl" style="color: var(--text-bright)"></i>
+            <span class="logo-text"><span class="logo-pic">Pic</span><span class="logo-source">Source</span></span>
         </a>
     </div>
 
-    <!-- Flash messages -->
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
             <div class="container mx-auto px-4 pt-4 max-w-md">
@@ -183,14 +152,14 @@
     {% endwith %}
 
     <div class="flex-grow flex items-center justify-center px-4 py-12">
-        <div class="auth-card card w-full max-w-md rounded-2xl">
+        <div class="auth-card card w-full max-w-md rounded-xl">
             <div class="card-body p-10">
 
                 <div class="text-center mb-8">
                     <div class="icon-circle inline-flex items-center justify-center w-16 h-16 rounded-full mb-4">
                         <i class="fa-solid fa-right-to-bracket text-2xl"></i>
                     </div>
-                    <h1 class="text-3xl font-black title-gradient">Welcome back</h1>
+                    <h1 class="text-3xl title-gradient">Welcome <span class="accent">back</span></h1>
                     <p style="color: var(--text-muted)" class="text-sm mt-2">Sign in to your PicSource account</p>
                 </div>
 
@@ -199,9 +168,7 @@
 
                     <div class="form-control">
                         <label class="label pb-1">
-                            <span class="label-text font-semibold">
-                                <i class="fa-solid fa-user mr-1" style="color: var(--primary-light)"></i> Username
-                            </span>
+                            <span class="label-text">Username</span>
                         </label>
                         <input type="text" name="username"
                                placeholder="Enter your username"
@@ -211,9 +178,7 @@
 
                     <div class="form-control">
                         <label class="label pb-1">
-                            <span class="label-text font-semibold">
-                                <i class="fa-solid fa-lock mr-1" style="color: var(--primary-light)"></i> Password
-                            </span>
+                            <span class="label-text">Password</span>
                         </label>
                         <input type="password" name="password"
                                placeholder="Enter your password"
@@ -222,14 +187,14 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary-custom btn-block mt-2 text-base">
-                        <i class="fa-solid fa-right-to-bracket mr-2"></i> Sign In
+                        Sign In
                     </button>
                 </form>
 
                 <div class="divider divider-custom text-xs">Don't have an account?</div>
 
                 <a href="/register" class="btn btn-outline-custom btn-block">
-                    <i class="fa-solid fa-user-plus mr-2"></i> Create Account
+                    Create Account
                 </a>
 
             </div>
@@ -237,7 +202,7 @@
     </div>
 
     <footer class="footer footer-center p-6 footer-custom">
-        <p class="font-bold text-sm">PicSource &copy; 2026</p>
+        <p class="font-bold text-sm serif">PicSource &copy; 2026</p>
     </footer>
 
 </body>
