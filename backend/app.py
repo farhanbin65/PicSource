@@ -190,16 +190,29 @@ def delete_image(filename):
     except Exception:
         pass
 
-    # DELETE via Logic App → Cosmos DB
+    # Find the document id from Cosmos DB first
     try:
-        requests.request(
-            "DELETE", LOGIC_DELETE,
-            json={"id": filename},
-            timeout=30
-        )
-        flash("Image deleted.", "info")
+        response = requests.get(LOGIC_READ, timeout=30)
+        data = response.json()
+        images = data if isinstance(data, list) else data.get("value", [])
+        doc_id = None
+        for img in images:
+            if img.get("filename") == filename:
+                doc_id = img.get("id")
+                break
+
+        if doc_id:
+            requests.request(
+                "DELETE", LOGIC_DELETE,
+                json={"id": doc_id},
+                timeout=30
+            )
+            flash("Image deleted.", "info")
+        else:
+            flash("Image not found in database.", "error")
     except Exception as e:
         flash(f"Delete failed: {e}", "error")
+
     return redirect(url_for("index"))
 
 # ── UPDATE (UPDATE via Logic App) ──────────────────────────
