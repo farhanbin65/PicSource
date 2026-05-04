@@ -105,13 +105,12 @@ def logout():
 def index():
     try:
         response = requests.get(LOGIC_READ, timeout=30)
-        text = response.text.strip()
-        if text:
+        if response.status_code == 200 and response.text.strip():
             data = response.json()
             if isinstance(data, list):
                 images = data
             elif isinstance(data, dict):
-                images = data.get("value", data.get("Documents", []))
+                images = data.get("value", [])
             else:
                 images = []
         else:
