@@ -105,14 +105,21 @@ def logout():
 def index():
     try:
         response = requests.get(LOGIC_READ, timeout=30)
-        data = response.json()
-        # Cosmos DB returns documents in 'value' array
-        images = data if isinstance(data, list) else data.get("value", [])
+        if response.status_code == 200 and response.text:
+            data = response.json()
+            # Handle different response formats
+            if isinstance(data, list):
+                images = data
+            elif isinstance(data, dict):
+                images = data.get("value", data.get("Documents", data.get("items", [])))
+            else:
+                images = []
+        else:
+            images = []
     except Exception as e:
         images = []
         flash(f"Could not load images: {e}", "error")
     return render_template("index.html", images=images)
-
 # ── UPLOAD (CREATE via Logic App) ──────────────────────────
 @app.route("/upload-page")
 @login_required
