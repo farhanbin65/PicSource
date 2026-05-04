@@ -235,6 +235,19 @@ def update_image(filename):
         flash(f"Update failed: {e}", "error")
     return redirect(url_for("index"))
 
+@app.route("/debug")
+def debug():
+    try:
+        response = requests.get(LOGIC_READ, timeout=30)
+        return {
+            "status_code": response.status_code,
+            "text_length": len(response.text),
+            "text_preview": response.text[:500],
+            "json": response.json() if response.text.strip() else "empty"
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
 # ── HEALTH CHECK ───────────────────────────────────────────
 @app.route("/health")
 def health():
