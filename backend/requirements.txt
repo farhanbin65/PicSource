@@ -6,3 +6,4 @@ python-dotenv
 azure-storage-blob
 azure-identity
 gunicorn
+requests

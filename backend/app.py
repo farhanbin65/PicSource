@@ -1,10 +1,10 @@
 import os
 import uuid
+import requests
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_wtf.csrf import CSRFProtect
 from werkzeug.security import generate_password_hash, check_password_hash
 from pymongo import MongoClient
-from bson import ObjectId
 from datetime import datetime
 from functools import wraps
 from dotenv import load_dotenv
@@ -14,23 +14,27 @@ load_dotenv()
 
 app = Flask(__name__, template_folder="../frontend", static_folder="../static")
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret")
-app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
+app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024
 
 csrf = CSRFProtect(app)
 
-# ── COSMOS DB / MONGODB ATLAS ──────────────────────────────
-client     = MongoClient(os.environ.get("COSMOS_URI"))
-db         = client["Picsource_db"]
-images_col = db["image_metadata"]
-users_col  = db["user"]
+# ── MONGODB ATLAS (for user accounts only) ─────────────────
+client    = MongoClient(os.environ.get("COSMOS_URI"))
+db        = client["Picsource_db"]
+users_col = db["user"]
 
-# ── AZURE BLOB STORAGE (connection string) ─────────────────
+# ── LOGIC APP URLS (CRUD for images via Cosmos DB) ─────────
+LOGIC_CREATE = os.environ.get("LOGIC_CREATE")
+LOGIC_READ   = os.environ.get("LOGIC_READ")
+LOGIC_UPDATE = os.environ.get("LOGIC_UPDATE")
+LOGIC_DELETE = os.environ.get("LOGIC_DELETE")
+
+# ── AZURE BLOB STORAGE ─────────────────────────────────────
 BLOB_CONTAINER        = os.environ.get("BLOB_CONTAINER", "images")
 AZURE_STORAGE_ACCOUNT = os.environ.get("AZURE_STORAGE_ACCOUNT")
-
-conn_str         = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
-blob_service     = BlobServiceClient.from_connection_string(conn_str)
-container_client = blob_service.get_container_client(BLOB_CONTAINER)
+conn_str              = os.environ.get("AZURE_STORAGE_CONNECTION_STRING")
+blob_service          = BlobServiceClient.from_connection_string(conn_str)
+container_client      = blob_service.get_container_client(BLOB_CONTAINER)
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp", "tiff", "bmp", "heic"}
 
@@ -73,14 +77,12 @@ def login():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "").strip()
-
         if username == os.environ.get("ADMIN_USERNAME") and \
            password == os.environ.get("ADMIN_PASSWORD"):
             session["username"] = username
             session["is_admin"]  = True
             flash("Welcome, Admin!", "success")
             return redirect(url_for("index"))
-
         user = users_col.find_one({"username": username})
         if not user or not check_password_hash(user["password"], password):
             flash("Invalid username or password.", "error")
@@ -98,13 +100,20 @@ def logout():
     flash("Logged out.", "info")
     return redirect(url_for("login"))
 
-# ── GALLERY ────────────────────────────────────────────────
+# ── GALLERY (READ via Logic App) ───────────────────────────
 @app.route("/")
 def index():
-    images = list(images_col.find())
+    try:
+        response = requests.get(LOGIC_READ, timeout=30)
+        data = response.json()
+        # Cosmos DB returns documents in 'value' array
+        images = data if isinstance(data, list) else data.get("value", [])
+    except Exception as e:
+        images = []
+        flash(f"Could not load images: {e}", "error")
     return render_template("index.html", images=images)
 
-# ── UPLOAD ─────────────────────────────────────────────────
+# ── UPLOAD (CREATE via Logic App) ──────────────────────────
 @app.route("/upload-page")
 @login_required
 def upload_page():
@@ -127,6 +136,7 @@ def handle_upload():
     ext         = os.path.splitext(file.filename)[1].lower()
     unique_name = f"{uuid.uuid4()}{ext}"
 
+    # Upload to Azure Blob
     blob_client = container_client.get_blob_client(unique_name)
     file_bytes  = file.read()
     blob_client.upload_blob(file_bytes, overwrite=True)
@@ -134,7 +144,8 @@ def handle_upload():
     size_bytes = len(file_bytes)
     tags       = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
 
-    images_col.insert_one({
+    # CREATE via Logic App → Cosmos DB
+    payload = {
         "filename":     unique_name,
         "image_url":    get_blob_url(unique_name),
         "title":        request.form.get("title", "").strip(),
@@ -151,42 +162,51 @@ def handle_upload():
         "size_mb":      round(size_bytes / (1024 * 1024), 2),
         "upload_time":  datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "uploaded_by":  session.get("username", "unknown")
-    })
-    flash("Image uploaded!", "success")
+    }
+    try:
+        requests.post(LOGIC_CREATE, json=payload, timeout=30)
+        flash("Image uploaded!", "success")
+    except Exception as e:
+        flash(f"Upload failed: {e}", "error")
     return redirect(url_for("index"))
 
-# ── DELETE ─────────────────────────────────────────────────
+# ── DELETE (DELETE via Logic App) ──────────────────────────
 @app.route("/delete/<filename>", methods=["POST"])
 @login_required
 def delete_image(filename):
     if not session.get("is_admin"):
         flash("Only admin can delete images.", "error")
         return redirect(url_for("index"))
-    img = images_col.find_one({"filename": filename})
-    if not img:
-        flash("Image not found.", "error")
-        return redirect(url_for("index"))
+
+    # Delete from Blob Storage
     try:
         container_client.get_blob_client(filename).delete_blob()
     except Exception:
         pass
-    images_col.delete_one({"filename": filename})
-    flash("Image deleted.", "info")
+
+    # DELETE via Logic App → Cosmos DB
+    try:
+        requests.request(
+            "DELETE", LOGIC_DELETE,
+            json={"id": filename},
+            timeout=30
+        )
+        flash("Image deleted.", "info")
+    except Exception as e:
+        flash(f"Delete failed: {e}", "error")
     return redirect(url_for("index"))
 
-# ── UPDATE (metadata only) ─────────────────────────────────
+# ── UPDATE (UPDATE via Logic App) ──────────────────────────
 @app.route("/update/<filename>", methods=["POST"])
 @login_required
 def update_image(filename):
     if not session.get("is_admin"):
         flash("Only admin can edit images.", "error")
         return redirect(url_for("index"))
-    img = images_col.find_one({"filename": filename})
-    if not img:
-        flash("Image not found.", "error")
-        return redirect(url_for("index"))
+
     tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
-    images_col.update_one({"filename": filename}, {"$set": {
+    payload = {
+        "id":           filename,
         "title":        request.form.get("title", "").strip(),
         "description":  request.form.get("description", "").strip(),
         "category":     request.form.get("category", "").strip(),
@@ -197,9 +217,28 @@ def update_image(filename):
         "camera":       request.form.get("camera", "").strip(),
         "location":     request.form.get("location", "").strip(),
         "tags":         tags,
-    }})
-    flash("Image updated!", "success")
+    }
+    try:
+        requests.request(
+            "PATCH", LOGIC_UPDATE,
+            json=payload,
+            timeout=30
+        )
+        flash("Image updated!", "success")
+    except Exception as e:
+        flash(f"Update failed: {e}", "error")
     return redirect(url_for("index"))
+
+# ── HEALTH CHECK ───────────────────────────────────────────
+@app.route("/health")
+def health():
+    return {
+        "status":   "healthy",
+        "service":  "PicSource",
+        "storage":  "Azure Blob Storage",
+        "database": "Azure Cosmos DB (via Logic Apps)",
+        "crud":     "Azure Logic Apps"
+    }, 200
 
 if __name__ == "__main__":
     debug = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
