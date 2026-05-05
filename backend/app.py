@@ -242,6 +242,25 @@ def delete_image(filename):
 
     return redirect(url_for("index"))
 
+@app.route("/test-delete")
+def test_delete():
+    import json
+    # Use a real doc id from your Cosmos DB
+    test_id = "bcfa52fb-b5a5-4834-9c50-4c4d867faf85"
+    payload = {"id": test_id}
+    try:
+        r = requests.request("DELETE", LOGIC_DELETE, json=payload, timeout=30)
+        return {
+            "LOGIC_DELETE_URL": LOGIC_DELETE,
+            "payload_sent": payload,
+            "status_code": r.status_code,
+            "response": r.text[:500]
+        }
+    except Exception as e:
+        return {"error": str(e), "LOGIC_DELETE_URL": LOGIC_DELETE}
+
+
+
 # ── UPDATE (UPDATE via Logic App) ──────────────────────────
 @app.route("/update/<filename>", methods=["POST"])
 @login_required
