@@ -249,7 +249,7 @@ def test_delete():
     test_id = "bcfa52fb-b5a5-4834-9c50-4c4d867faf85"
     payload = {"id": test_id}
     try:
-        r = requests.request("DELETE", LOGIC_DELETE, json=payload, timeout=30)
+        r = requests.request("DELETE", f"{LOGIC_DELETE}&docid={doc_id}", timeout=30)
         return {
             "LOGIC_DELETE_URL": LOGIC_DELETE,
             "payload_sent": payload,
