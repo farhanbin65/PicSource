@@ -59,25 +59,16 @@ def login_required(f):
 
 # ── HELPER: fetch all images + find doc by filename ────────
 def get_doc_id_by_filename(filename):
-    """
-    Calls LOGIC_READ and returns the Cosmos DB document id
-    matching the given filename. Returns None if not found.
-    Also logs the raw response for debugging.
-    """
     response = requests.get(LOGIC_READ, timeout=30)
     logger.info(f"LOGIC_READ status: {response.status_code}")
-    logger.info(f"LOGIC_READ preview: {response.text[:500]}")
 
     data = response.json()
     images = data if isinstance(data, list) else data.get("value", [])
 
     logger.info(f"Total images returned: {len(images)}")
-    if images:
-        logger.info(f"Sample image keys: {list(images[0].keys())}")
 
     for img in images:
         if img.get("filename") == filename:
-            # Cosmos DB NoSQL uses 'id' but check common variants too
             doc_id = img.get("id") or img.get("_id") or img.get("ID")
             logger.info(f"Found match — filename: {filename}, doc_id: {doc_id}")
             return doc_id
@@ -208,7 +199,7 @@ def handle_upload():
         flash(f"Upload failed: {e}", "error")
     return redirect(url_for("index"))
 
-# ── DELETE (DELETE via Logic App) ──────────────────────────
+# ── DELETE (POST to Logic App — DELETE method doesn't support body) ─
 @app.route("/delete/<filename>", methods=["POST"])
 @login_required
 def delete_image(filename):
@@ -223,18 +214,19 @@ def delete_image(filename):
     except Exception as e:
         logger.warning(f"Blob delete failed (may not exist): {e}")
 
-    # Look up Cosmos DB doc id and call LOGIC_DELETE
+    # Look up Cosmos DB doc id and call LOGIC_DELETE via POST
     try:
         doc_id = get_doc_id_by_filename(filename)
 
         if doc_id:
             delete_payload = {"id": doc_id}
             logger.info(f"Calling LOGIC_DELETE with payload: {delete_payload}")
-            r = requests.request("DELETE", LOGIC_DELETE, json=delete_payload, timeout=30)
+            # Use POST — Azure Logic Apps HTTP trigger rejects body on DELETE requests
+            r = requests.post(LOGIC_DELETE, json=delete_payload, timeout=30)
             logger.info(f"LOGIC_DELETE status: {r.status_code}, response: {r.text[:200]}")
             flash("Image deleted.", "info")
         else:
-            flash("Image not found in database — blob removed but DB record may remain.", "warning")
+            flash("Image not found in database.", "warning")
 
     except Exception as e:
         logger.error(f"Delete error: {e}")
@@ -242,26 +234,7 @@ def delete_image(filename):
 
     return redirect(url_for("index"))
 
-@app.route("/test-delete")
-def test_delete():
-    import json
-    # Use a real doc id from your Cosmos DB
-    test_id = "bcfa52fb-b5a5-4834-9c50-4c4d867faf85"
-    payload = {"id": test_id}
-    try:
-        r = requests.request("DELETE", f"{LOGIC_DELETE}&docid={doc_id}", timeout=30)
-        return {
-            "LOGIC_DELETE_URL": LOGIC_DELETE,
-            "payload_sent": payload,
-            "status_code": r.status_code,
-            "response": r.text[:500]
-        }
-    except Exception as e:
-        return {"error": str(e), "LOGIC_DELETE_URL": LOGIC_DELETE}
-
-
-
-# ── UPDATE (UPDATE via Logic App) ──────────────────────────
+# ── UPDATE (PATCH via Logic App) ───────────────────────────
 @app.route("/update/<filename>", methods=["POST"])
 @login_required
 def update_image(filename):
@@ -269,7 +242,6 @@ def update_image(filename):
         flash("Only admin can edit images.", "error")
         return redirect(url_for("index"))
 
-    # Must look up real Cosmos DB doc id — filename is NOT the id
     try:
         doc_id = get_doc_id_by_filename(filename)
 
@@ -279,7 +251,7 @@ def update_image(filename):
 
         tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
         payload = {
-            "id":           doc_id,        # ← fixed: was sending filename before
+            "id":           doc_id,
             "title":        request.form.get("title", "").strip(),
             "description":  request.form.get("description", "").strip(),
             "category":     request.form.get("category", "").strip(),
