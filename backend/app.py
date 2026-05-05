@@ -243,15 +243,33 @@ def update_image(filename):
         return redirect(url_for("index"))
 
     try:
-        doc_id = get_doc_id_by_filename(filename)
+        # Fetch existing doc to preserve all fields
+        response = requests.get(LOGIC_READ, timeout=30)
+        data = response.json()
+        images = data if isinstance(data, list) else data.get("value", [])
+        
+        existing = None
+        for img in images:
+            if img.get("filename") == filename:
+                existing = img
+                break
 
-        if not doc_id:
+        if not existing:
             flash("Image not found in database.", "error")
             return redirect(url_for("index"))
 
+        doc_id = existing.get("id")
         tags = [t.strip() for t in request.form.get("tags", "").split(",") if t.strip()]
+
+        # Merge form fields into existing doc — preserves image_url, size_kb etc.
         payload = {
             "id":           doc_id,
+            "filename":     existing.get("filename"),
+            "image_url":    existing.get("image_url"),
+            "size_kb":      existing.get("size_kb"),
+            "size_mb":      existing.get("size_mb"),
+            "upload_time":  existing.get("upload_time"),
+            "uploaded_by":  existing.get("uploaded_by"),
             "title":        request.form.get("title", "").strip(),
             "description":  request.form.get("description", "").strip(),
             "category":     request.form.get("category", "").strip(),
@@ -263,6 +281,7 @@ def update_image(filename):
             "location":     request.form.get("location", "").strip(),
             "tags":         tags,
         }
+
         logger.info(f"Calling LOGIC_UPDATE with id: {doc_id}")
         r = requests.request("PATCH", LOGIC_UPDATE, json=payload, timeout=30)
         logger.info(f"LOGIC_UPDATE status: {r.status_code}, response: {r.text[:200]}")
@@ -287,4 +306,4 @@ def health():
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5001))
-    app.run(port=port)
+    app.run(port=port)              
